@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
         Route::prefix('exams')->name('exams.')->group(function () {
             Route::get('/', [ExamController::class, 'index'])->name('index');
             Route::get('/create', [ExamController::class, 'create'])->name('create');
+            Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
         });
     });
 

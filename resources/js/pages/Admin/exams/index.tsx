@@ -23,14 +23,14 @@ export default function Index() {
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Ujian</h1>
                     <Link
-                        href="/exams/create"
+                        href="/admin/exams/create"
                         className="rounded-lg border px-3 py-2 text-sm font-medium"
                     >
-                        Create Ujian
+                        Buat Ujian
                     </Link>
                 </div>
 
-                <div>Ujian list</div>
+                <div>Daftar Ujian</div>
             </div>
         </AppLayout>
     );

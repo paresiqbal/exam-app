@@ -16,14 +16,14 @@ class ExamController extends Controller
             ->latest()
             ->paginate(10);
 
-        return Inertia::render('admin/exams/index', [
+        return Inertia::render('admin/exams/Index', [
             'exams' => $exams,
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('exams/create');
+        return Inertia::render('admin/exams/CreateExam');
     }
 
     public function store(Request $request): RedirectResponse
@@ -42,13 +42,13 @@ class ExamController extends Controller
         Exam::create($data);
 
         return redirect()
-            ->route('exams.index')
+            ->route('admin.exams.index')
             ->with('success', 'Exam created.');
     }
 
     public function edit(Exam $exam): Response
     {
-        return Inertia::render('exams/edit', [
+        return Inertia::render('admin/exams/EditExam', [
             'exam' => $exam,
         ]);
     }
@@ -67,7 +67,7 @@ class ExamController extends Controller
         $exam->update($data);
 
         return redirect()
-            ->route('exams.index')
+            ->route('admin.exams.index')
             ->with('success', 'Exam updated.');
     }
 
