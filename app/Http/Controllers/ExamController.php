@@ -10,13 +10,13 @@ use Illuminate\Http\RedirectResponse;
 
 class ExamController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        $exams = Exam::with('creator')
-            ->latest()
+        $exams = Exam::withCount('attempts')
+            ->orderByDesc('start_at')
             ->paginate(10);
 
-        return Inertia::render('admin/exams/Index', [
+        return Inertia::render('admin/exams/IndexExam', [
             'exams' => $exams,
         ]);
     }
@@ -45,6 +45,16 @@ class ExamController extends Controller
             ->route('admin.exams.index')
             ->with('success', 'Exam created.');
     }
+
+    public function detail(Exam $exam): Response
+    {
+        $exam->loadCount('attempts');
+
+        return Inertia::render('admin/exams/DetailExam', [
+            'exam' => $exam,
+        ]);
+    }
+
 
     public function edit(Exam $exam): Response
     {

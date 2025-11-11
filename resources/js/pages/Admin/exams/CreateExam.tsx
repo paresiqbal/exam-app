@@ -156,9 +156,9 @@ export default function CreateExam() {
 
                     <div className="flex gap-3">
                         <Button type="submit" disabled={processing}>
-                            {processing ? 'Saving...' : 'Save Exam'}
+                            {processing ? 'Menyimpan...' : 'Simpan Ujian'}
                         </Button>
-                        <Button variant="secondary">Cancel</Button>
+                        <Button variant="secondary">Batal</Button>
                     </div>
                 </form>
             </div>

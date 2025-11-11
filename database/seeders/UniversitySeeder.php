@@ -33,21 +33,27 @@ class UniversitySeeder extends Seeder
         ];
 
         foreach ($data as $uniData) {
-            $university = University::create([
-                'name' => $uniData['name'],
-                'slug' => Str::slug($uniData['name']),
-                'location' => $uniData['location'],
-                'description' => $uniData['description'],
-            ]);
+            $university = University::updateOrCreate(
+                ['slug' => Str::slug($uniData['name'])],
+                [
+                    'name' => $uniData['name'],
+                    'location' => $uniData['location'],
+                    'description' => $uniData['description'],
+                ]
+            );
 
             foreach ($uniData['majors'] as $majorData) {
-                Major::create([
-                    'university_id' => $university->id,
-                    'name' => $majorData['name'],
-                    'slug' => Str::slug($university->slug . '-' . $majorData['name']),
-                    'min_score' => $majorData['min_score'],
-                    'description' => null,
-                ]);
+                $slug = Str::slug($university->slug . '-' . $majorData['name']);
+
+                Major::updateOrCreate(
+                    ['slug' => $slug], // cari berdasarkan slug
+                    [
+                        'university_id' => $university->id,
+                        'name'          => $majorData['name'],
+                        'min_score'     => $majorData['min_score'],
+                        'description'   => null,
+                    ]
+                );
             }
         }
     }

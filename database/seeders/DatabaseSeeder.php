@@ -3,18 +3,15 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\RoleUserSeeder;
+use Database\Seeders\UniversitySeeder;
+use Database\Seeders\ExamSeeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
@@ -29,5 +26,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(UniversitySeeder::class);
+
+        $this->call([
+            RoleUserSeeder::class,
+            UniversitySeeder::class,
+            ExamSeeder::class,
+        ]);
     }
 }
