@@ -1,6 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
+// types
+import { type BreadcrumbItem } from '@/types';
+
 export default function CreateExam() {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
@@ -13,17 +16,17 @@ export default function CreateExam() {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/exams'); // direct URL (since we’re skipping ziggy)
+        post('/exams');
     };
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Dashboard', href: '/admin/dashboard' },
+        { title: 'Exams', href: '/admin/exams' },
+        { title: 'Create', href: '/admin/exams/create' },
+    ];
+
     return (
-        <AppLayout
-            breadcrumbs={[
-                { title: 'Dashboard', href: '/admin/dashboard' },
-                { title: 'Exams', href: '/exams' },
-                { title: 'Create', href: '/exams/create' },
-            ]}
-        >
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Exam" />
 
             <h1 className="mb-6 text-2xl font-semibold">Create Exam</h1>

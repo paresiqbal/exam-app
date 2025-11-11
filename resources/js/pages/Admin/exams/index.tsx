@@ -9,10 +9,8 @@ import { type BreadcrumbItem } from '@/types';
 
 export default function Index() {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Ujian',
-            href: '/admin/exams',
-        },
+        { title: 'Dashboard', href: '/admin/dashboard' },
+        { title: 'Exams', href: '/admin/exams' },
     ];
 
     return (
