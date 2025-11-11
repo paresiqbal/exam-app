@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Exam;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
 
 class ExamController extends Controller
 {
@@ -38,6 +38,7 @@ class ExamController extends Controller
         ]);
 
         $data['created_by'] = $request->user()->id;
+        $data['status'] = 'upcoming';
 
         Exam::create($data);
 
@@ -46,26 +47,24 @@ class ExamController extends Controller
             ->with('success', 'Exam created.');
     }
 
-    public function detail(Exam $exam): Response
+    public function show(Exam $exam)
     {
-        $exam->loadCount('attempts');
-
-        return Inertia::render('admin/exams/DetailExam', [
+        return inertia('admin/exams/ShowExam', [
             'exam' => $exam,
         ]);
     }
 
 
-    public function edit(Exam $exam): Response
+    public function edit(Exam $exam)
     {
-        return Inertia::render('admin/exams/EditExam', [
+        return inertia('admin/exams/EditExam', [
             'exam' => $exam,
         ]);
     }
 
-    public function update(Request $request, Exam $exam): RedirectResponse
+    public function update(Request $request, Exam $exam)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
             'description'      => ['nullable', 'string'],
             'token'            => ['nullable', 'string', 'max:50'],
@@ -74,11 +73,10 @@ class ExamController extends Controller
             'duration_minutes' => ['required', 'integer', 'min:1'],
         ]);
 
-        $exam->update($data);
+        $exam->update($validated);
 
-        return redirect()
-            ->route('admin.exams.index')
-            ->with('success', 'Exam updated.');
+        return redirect()->route('admin.exams.index')
+            ->with('success', 'Exam updated successfully.');
     }
 
     public function destroy(Exam $exam): RedirectResponse

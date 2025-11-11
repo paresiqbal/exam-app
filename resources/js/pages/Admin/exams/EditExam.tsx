@@ -20,8 +20,6 @@ type PageProps = {
 
 function formatDateTimeLocal(value: string): string {
     if (!value) return '';
-    // value dari backend biasanya ISO string -> "2025-11-12T10:00:00.000000Z"
-    // datetime-local butuh "YYYY-MM-DDTHH:MM"
     return value.slice(0, 16);
 }
 
@@ -39,7 +37,7 @@ export default function EditExam() {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/exams/${exam.id}`);
+        put(`/admin/exams/${exam.id}`);
     };
 
     const breadcrumbs: BreadcrumbItem[] = [

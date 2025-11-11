@@ -29,6 +29,7 @@ class ExamSeeder extends Seeder
                 'start_at'         => $now->copy()->addDay(),
                 'end_at'           => $now->copy()->addDays(2),
                 'duration_minutes' => 90,
+                'status' => 'upcoming'
             ]
         );
 
@@ -41,6 +42,7 @@ class ExamSeeder extends Seeder
                 'start_at'         => $now->copy()->addDays(3),
                 'end_at'           => $now->copy()->addDays(4),
                 'duration_minutes' => 120,
+                'status' => 'upcoming'
             ]
         );
     }

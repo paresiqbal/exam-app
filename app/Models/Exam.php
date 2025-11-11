@@ -19,6 +19,7 @@ class Exam extends Model
         'start_at',
         'end_at',
         'duration_minutes',
+        'status',
     ];
 
     protected $casts = [

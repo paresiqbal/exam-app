@@ -20,6 +20,7 @@ return new class extends Migration
             $table->dateTime('start_at');
             $table->dateTime('end_at');
             $table->integer('duration_minutes');
+            $table->string('status')->default('upcoming');
             $table->timestamps();
         });
     }

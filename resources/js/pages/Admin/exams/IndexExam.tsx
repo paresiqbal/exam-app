@@ -11,6 +11,7 @@ type Exam = {
     start_at: string;
     end_at: string;
     duration_minutes: number;
+    status: 'upcoming' | 'running' | 'finished';
     attempts_count: number;
 };
 
@@ -56,6 +57,7 @@ export default function IndexExam() {
                                 <th className="py-2 pr-4">Mulai</th>
                                 <th className="py-2 pr-4">Berakhir</th>
                                 <th className="py-2 pr-4">Durasi</th>
+                                <th className="py-2 pr-4">Status</th>
                                 <th className="py-2 pr-4">Participant</th>
                                 <th className="py-2 pr-4">Token</th>
                                 <th className="py-2 pr-0 text-right">Aksi</th>
@@ -98,6 +100,23 @@ export default function IndexExam() {
                                         {exam.duration_minutes} menit
                                     </td>
                                     <td className="py-2 pr-4 align-top">
+                                        {exam.status === 'running' && (
+                                            <span className="rounded bg-green-100 px-2 py-1 text-xs text-green-700">
+                                                Sedang Berlangsung
+                                            </span>
+                                        )}
+                                        {exam.status === 'upcoming' && (
+                                            <span className="rounded bg-yellow-100 px-2 py-1 text-xs text-yellow-700">
+                                                Belum Mulai
+                                            </span>
+                                        )}
+                                        {exam.status === 'finished' && (
+                                            <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700">
+                                                Selesai
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="py-2 pr-4 align-top">
                                         {exam.attempts_count} peserta
                                     </td>
                                     <td className="py-2 pr-4 align-top">
@@ -108,7 +127,6 @@ export default function IndexExam() {
                                         )}
                                     </td>
                                     <td className="space-x-2 py-2 pr-0 text-right align-top">
-                                        {/* Detail (sementara placeholder) */}
                                         <Button
                                             asChild
                                             size="sm"
