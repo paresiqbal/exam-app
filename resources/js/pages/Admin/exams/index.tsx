@@ -10,7 +10,7 @@ import { type BreadcrumbItem } from '@/types';
 export default function Index() {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: '/admin/dashboard' },
-        { title: 'Exams', href: '/admin/exams' },
+        { title: 'Ujian', href: '/admin/exams' },
     ];
 
     return (
@@ -22,7 +22,7 @@ export default function Index() {
                     <h1 className="text-2xl font-semibold">Ujian</h1>
                     <Link
                         href="/admin/exams/create"
-                        className="rounded-lg border px-3 py-2 text-sm font-medium"
+                        className="rounded border bg-orange-400 px-3 py-2 text-sm font-bold"
                     >
                         Buat Ujian
                     </Link>

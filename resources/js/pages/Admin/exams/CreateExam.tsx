@@ -1,7 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 
 // types
+import { Button } from '@/components/ui/button';
 import { type BreadcrumbItem } from '@/types';
 
 export default function CreateExam() {
@@ -21,151 +22,146 @@ export default function CreateExam() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: '/admin/dashboard' },
-        { title: 'Exams', href: '/admin/exams' },
-        { title: 'Create', href: '/admin/exams/create' },
+        { title: 'Ujian', href: '/admin/exams' },
+        { title: 'Buat Ujian', href: '/admin/exams/create' },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Exam" />
+            <Head title="Buat Ujian" />
 
-            <h1 className="mb-6 text-2xl font-semibold">Create Exam</h1>
-
-            <form
-                onSubmit={submit}
-                className="max-w-xl space-y-5 rounded-xl border bg-card p-6"
-            >
-                {/* Title */}
-                <div>
-                    <label className="mb-1 block text-sm font-medium">
-                        Title
-                    </label>
-                    <input
-                        type="text"
-                        value={data.title}
-                        onChange={(e) => setData('title', e.target.value)}
-                        className="w-full rounded-lg border px-3 py-2 text-sm"
-                    />
-                    {errors.title && (
-                        <p className="text-xs text-red-500">{errors.title}</p>
-                    )}
-                </div>
-
-                {/* Description */}
-                <div>
-                    <label className="mb-1 block text-sm font-medium">
-                        Description
-                    </label>
-                    <textarea
-                        value={data.description}
-                        onChange={(e) => setData('description', e.target.value)}
-                        className="w-full rounded-lg border px-3 py-2 text-sm"
-                    />
-                    {errors.description && (
-                        <p className="text-xs text-red-500">
-                            {errors.description}
-                        </p>
-                    )}
-                </div>
-
-                {/* Date & Time */}
-                <div className="grid gap-4 md:grid-cols-2">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <h1 className="mb-6 text-2xl font-semibold">Buat Ujian</h1>
+                <form
+                    onSubmit={submit}
+                    className="max-w-screen space-y-5 rounded-xl border bg-card p-6"
+                >
                     <div>
                         <label className="mb-1 block text-sm font-medium">
-                            Start at
-                        </label>
-                        <input
-                            type="datetime-local"
-                            value={data.start_at}
-                            onChange={(e) =>
-                                setData('start_at', e.target.value)
-                            }
-                            className="w-full rounded-lg border px-3 py-2 text-sm"
-                        />
-                        {errors.start_at && (
-                            <p className="text-xs text-red-500">
-                                {errors.start_at}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            End at
-                        </label>
-                        <input
-                            type="datetime-local"
-                            value={data.end_at}
-                            onChange={(e) => setData('end_at', e.target.value)}
-                            className="w-full rounded-lg border px-3 py-2 text-sm"
-                        />
-                        {errors.end_at && (
-                            <p className="text-xs text-red-500">
-                                {errors.end_at}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Duration & Token */}
-                <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Duration (minutes)
-                        </label>
-                        <input
-                            type="number"
-                            value={data.duration_minutes}
-                            onChange={(e) =>
-                                setData(
-                                    'duration_minutes',
-                                    Number(e.target.value),
-                                )
-                            }
-                            className="w-full rounded-lg border px-3 py-2 text-sm"
-                        />
-                        {errors.duration_minutes && (
-                            <p className="text-xs text-red-500">
-                                {errors.duration_minutes}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Token (optional)
+                            Judul Ujian
                         </label>
                         <input
                             type="text"
-                            value={data.token}
-                            onChange={(e) => setData('token', e.target.value)}
+                            value={data.title}
+                            onChange={(e) => setData('title', e.target.value)}
                             className="w-full rounded-lg border px-3 py-2 text-sm"
                         />
-                        {errors.token && (
+                        {errors.title && (
                             <p className="text-xs text-red-500">
-                                {errors.token}
+                                {errors.title}
                             </p>
                         )}
                     </div>
-                </div>
 
-                {/* Submit / Cancel */}
-                <div className="flex gap-3">
-                    <button
-                        type="submit"
-                        disabled={processing}
-                        className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
-                    >
-                        {processing ? 'Saving...' : 'Save Exam'}
-                    </button>
-                    <Link
-                        href="/exams"
-                        className="text-sm text-muted-foreground hover:underline"
-                    >
-                        Cancel
-                    </Link>
-                </div>
-            </form>
+                    <div>
+                        <label className="mb-1 block text-sm font-medium">
+                            Deskripsi Ujian
+                        </label>
+                        <textarea
+                            value={data.description}
+                            onChange={(e) =>
+                                setData('description', e.target.value)
+                            }
+                            className="w-full rounded-lg border px-3 py-2 text-sm"
+                        />
+                        {errors.description && (
+                            <p className="text-xs text-red-500">
+                                {errors.description}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Mulai pada
+                            </label>
+                            <input
+                                type="datetime-local"
+                                value={data.start_at}
+                                onChange={(e) =>
+                                    setData('start_at', e.target.value)
+                                }
+                                className="w-full rounded-lg border px-3 py-2 text-sm"
+                            />
+                            {errors.start_at && (
+                                <p className="text-xs text-red-500">
+                                    {errors.start_at}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Berakhir pada
+                            </label>
+                            <input
+                                type="datetime-local"
+                                value={data.end_at}
+                                onChange={(e) =>
+                                    setData('end_at', e.target.value)
+                                }
+                                className="w-full rounded-lg border px-3 py-2 text-sm"
+                            />
+                            {errors.end_at && (
+                                <p className="text-xs text-red-500">
+                                    {errors.end_at}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Durasi (menit)
+                            </label>
+                            <input
+                                type="number"
+                                value={data.duration_minutes}
+                                onChange={(e) =>
+                                    setData(
+                                        'duration_minutes',
+                                        Number(e.target.value),
+                                    )
+                                }
+                                className="w-full rounded-lg border px-3 py-2 text-sm"
+                            />
+                            {errors.duration_minutes && (
+                                <p className="text-xs text-red-500">
+                                    {errors.duration_minutes}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Token
+                            </label>
+                            <input
+                                type="text"
+                                value={data.token}
+                                onChange={(e) =>
+                                    setData('token', e.target.value)
+                                }
+                                className="w-full rounded-lg border px-3 py-2 text-sm"
+                            />
+                            {errors.token && (
+                                <p className="text-xs text-red-500">
+                                    {errors.token}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Saving...' : 'Save Exam'}
+                        </Button>
+                        <Button variant="secondary">Cancel</Button>
+                    </div>
+                </form>
+            </div>
         </AppLayout>
     );
 }
