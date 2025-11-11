@@ -1,9 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use Illuminate\Support\Facades\Auth;
+
+use App\Http\Controllers\ExamController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -32,14 +34,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // ADMIN routes
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return Inertia::render('admin/dashboard');
-    })->name('admin.dashboard');
+Route::middleware(['auth', 'verified', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/dashboard', fn() => Inertia::render('admin/dashboard'))
+            ->name('dashboard');
 
-    // Tambahin route admin lain di sini
-    // Route::get('/admin/users', ...);
-});
+        Route::prefix('exams')->name('exams.')->group(function () {
+            Route::get('/', [ExamController::class, 'index'])->name('index');
+            Route::get('/create', [ExamController::class, 'create'])->name('create');
+        });
+    });
 
 // TEACHER routes
 Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
