@@ -79,12 +79,12 @@ class ExamController extends Controller
             ->with('success', 'Exam updated successfully.');
     }
 
-    public function destroy(Exam $exam): RedirectResponse
+    public function destroy(Exam $exam)
     {
         $exam->delete();
 
         return redirect()
-            ->route('exams.index')
-            ->with('success', 'Exam deleted.');
+            ->route('admin.exams.index')
+            ->with('success', 'Exam deleted successfully.');
     }
 }

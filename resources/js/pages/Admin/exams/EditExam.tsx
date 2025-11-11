@@ -1,3 +1,4 @@
+import DeleteExamButton from '@/components/DeleteExamButton';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -179,6 +180,7 @@ export default function EditExam() {
                             {processing ? 'Menyimpan...' : 'Simpan Ujian'}
                         </Button>
                         <Button variant="secondary">Batal</Button>
+                        <DeleteExamButton exam={exam} />
                     </div>
                 </form>
             </div>

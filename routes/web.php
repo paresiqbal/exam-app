@@ -48,6 +48,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::get('/{exam}', [ExamController::class, 'show'])->name('show');
             Route::get('/{exam}/edit', [ExamController::class, 'edit'])->name('edit');
             Route::put('/{exam}', [ExamController::class, 'update'])->name('update');
+            Route::delete('/{exam}', [ExamController::class, 'destroy'])->name('destroy');
         });
     });
 
