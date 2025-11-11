@@ -17,7 +17,7 @@ export default function CreateExam() {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/exams');
+        post('/admin/exams');
     };
 
     const breadcrumbs: BreadcrumbItem[] = [

@@ -44,7 +44,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])
         Route::prefix('exams')->name('exams.')->group(function () {
             Route::get('/', [ExamController::class, 'index'])->name('index');
             Route::get('/create', [ExamController::class, 'create'])->name('create');
-            Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
+            Route::post('/', [ExamController::class, 'store'])->name('store');
+            Route::get('/{exam}/edit', [ExamController::class, 'edit'])->name('edit');
+            Route::put('/{exam}', [ExamController::class, 'update'])->name('update');
         });
     });
 
