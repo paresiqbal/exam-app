@@ -34,7 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // ADMIN routes
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
-        return Inertia::render('Admin/Dashboard');
+        return Inertia::render('admin/dashboard');
     })->name('admin.dashboard');
 
     // Tambahin route admin lain di sini
@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 // TEACHER routes
 Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
     Route::get('/teacher/dashboard', function () {
-        return Inertia::render('Teacher/Dashboard');
+        return Inertia::render('teacher/dashboard');
     })->name('teacher.dashboard');
 
     // Route teacher lain
@@ -53,7 +53,7 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
 // STUDENT routes
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('/student/dashboard', function () {
-        return Inertia::render('Student/Dashboard');
+        return Inertia::render('student/dashboard');
     })->name('student.dashboard');
 
     // Route student lain
