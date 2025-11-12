@@ -1,3 +1,4 @@
+// resources/js/components/app-sidebar.tsx
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -11,7 +12,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
+import type { NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
@@ -24,8 +25,12 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Ujian',
-        href: '/admin/exams',
+        href: '#',
         icon: Folder,
+        items: [
+            { title: 'Semua Ujian', href: '/admin/exams' },
+            { title: 'Buat Ujian', href: '/admin/exams/create' }, // <- create page
+        ],
     },
 ];
 
