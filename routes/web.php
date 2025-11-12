@@ -61,13 +61,12 @@ Route::middleware(['auth', 'role:admin,teacher'])
     ->prefix('admin/exams/{exam}')
     ->name('admin.exams.')
     ->group(function () {
-        Route::get('questions', [ExamQuestionController::class, 'index'])->name('questions.index');
+        Route::get('questions',        [ExamQuestionController::class, 'index'])->name('questions.index');
         Route::get('questions/create', [ExamQuestionController::class, 'create'])->name('questions.create');
-        Route::post('questions', [ExamQuestionController::class, 'store'])->name('questions.store');
+        Route::post('questions',       [ExamQuestionController::class, 'store'])->name('questions.store');
         Route::get('questions/{q}/edit', [ExamQuestionController::class, 'edit'])->name('questions.edit');
-        Route::put('questions/{q}', [ExamQuestionController::class, 'update'])->name('questions.update');
-        Route::delete('questions/{q}', [ExamQuestionController::class, 'destroy'])->name('questions.destroy');
-        Route::post('questions/{q}/options/reorder', [ExamQuestionController::class, 'reorderOptions'])->name('questions.reorder');
+        Route::put('questions/{q}',      [ExamQuestionController::class, 'update'])->name('questions.update');
+        Route::delete('questions/{q}',   [ExamQuestionController::class, 'destroy'])->name('questions.destroy');
     });
 
 // STUDENT routes

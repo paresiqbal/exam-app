@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamQuestionRequest;
 use App\Http\Requests\UpdateExamQuestionRequest;
@@ -11,17 +12,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
+
 class ExamQuestionController extends Controller
 {
-    /** List questions for an exam */
+
     public function index(Exam $exam)
     {
+
+        $this->authorize('manage', $exam);
+
         $questions = $exam->questions()
             ->with(['options' => fn($q) => $q->orderBy('position')])
             ->latest()
             ->paginate(10);
 
-        return Inertia::render('admin/questions/Index', [
+        return Inertia::render('admin/questions/QuestionIndex', [
             'exam'      => $exam,
             'questions' => $questions,
         ]);
