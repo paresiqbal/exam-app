@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\ExamQuestionController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -56,6 +57,18 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
 });
 
 // ADMIN & TEACHER routes
+Route::middleware(['auth', 'role:admin,teacher'])
+    ->prefix('admin/exams/{exam}')
+    ->name('admin.exams.')
+    ->group(function () {
+        Route::get('questions', [ExamQuestionController::class, 'index'])->name('questions.index');
+        Route::get('questions/create', [ExamQuestionController::class, 'create'])->name('questions.create');
+        Route::post('questions', [ExamQuestionController::class, 'store'])->name('questions.store');
+        Route::get('questions/{q}/edit', [ExamQuestionController::class, 'edit'])->name('questions.edit');
+        Route::put('questions/{q}', [ExamQuestionController::class, 'update'])->name('questions.update');
+        Route::delete('questions/{q}', [ExamQuestionController::class, 'destroy'])->name('questions.destroy');
+        Route::post('questions/{q}/options/reorder', [ExamQuestionController::class, 'reorderOptions'])->name('questions.reorder');
+    });
 
 // STUDENT routes
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
