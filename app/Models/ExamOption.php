@@ -16,10 +16,12 @@ class ExamOption extends Model
         'option_text',
         'image_path',
         'is_correct',
+        'position',
     ];
 
     protected $casts = [
         'is_correct' => 'boolean',
+        'position'   => 'integer',
     ];
 
     public function question(): BelongsTo

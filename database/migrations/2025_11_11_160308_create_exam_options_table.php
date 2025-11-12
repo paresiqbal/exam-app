@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('exam_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('question_id')->constrained('exam_questions');
-            $table->string('label'); // A, B, C, etc (optional)
-            $table->text('option_text');
+            $table->foreignId('question_id')->constrained('exam_questions')->cascadeOnDelete();
+            $table->string('label')->nullable();
+            $table->text('option_text')->nullable();
             $table->string('image_path')->nullable();
             $table->boolean('is_correct')->default(false);
+            $table->unsignedSmallInteger('position')->default(0);
             $table->timestamps();
         });
     }
