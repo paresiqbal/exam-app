@@ -41,4 +41,12 @@ class Exam extends Model
     {
         return $this->hasMany(ExamAttempt::class);
     }
+
+    public function bankQuestions()
+    {
+        return $this->belongsToMany(\App\Models\Question::class, 'exam_questions')
+            ->withPivot(['order', 'score', 'shuffle_options'])
+            ->withTimestamps()
+            ->orderBy('exam_questions.order');
+    }
 }

@@ -48,10 +48,14 @@ class ExamQuestion extends Model
         return $this->hasMany(ExamAnswer::class, 'question_id');
     }
 
-    /** convenience: return IDs of correct options (multi_select only) */
     public function correctOptionIds(): array
     {
         if ($this->type !== 'multi_select') return [];
         return $this->options()->where('is_correct', true)->pluck('id')->all();
+    }
+
+    public function question(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Question::class, 'question_id');
     }
 }
