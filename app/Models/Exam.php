@@ -32,21 +32,8 @@ class Exam extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function questions(): HasMany
-    {
-        return $this->hasMany(ExamQuestion::class);
-    }
-
     public function attempts(): HasMany
     {
         return $this->hasMany(ExamAttempt::class);
-    }
-
-    public function bankQuestions()
-    {
-        return $this->belongsToMany(\App\Models\Question::class, 'exam_questions')
-            ->withPivot(['order', 'score', 'shuffle_options'])
-            ->withTimestamps()
-            ->orderBy('exam_questions.order');
     }
 }
