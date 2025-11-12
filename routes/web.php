@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-use App\Http\Controllers\ExamController;
+use App\Http\Controllers\Admin\ExamController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -13,17 +13,11 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-// Route::middleware(['auth', 'verified'])->group(function () {
-//     Route::get('dashboard', function () {
-//         return Inertia::render('dashboard');
-//     })->name('dashboard');
-// });
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $user = Auth::user();
 
-        // Sesuaikan dengan value kolom "role" di tabel users kamu
         return match ($user->role) {
             'admin'   => redirect()->route('admin.dashboard'),
             'teacher' => redirect()->route('teacher.dashboard'),
@@ -60,6 +54,8 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
 
     // Route teacher lain
 });
+
+// ADMIN & TEACHER routes
 
 // STUDENT routes
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
