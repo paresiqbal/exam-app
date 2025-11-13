@@ -28,33 +28,33 @@ interface Props {
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Teacher Dashboard', href: dashboard().url },
-    { title: 'Question Banks', href: '/teacher/question-banks' },
+    { title: 'Dashboard Guru', href: dashboard().url },
+    { title: 'Bank Soal', href: '/teacher/question-banks' },
 ];
 
 export default function QuestionBankIndex({ banks }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Question Banks" />
+            <Head title="Bank Soal" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">Question Banks</h1>
+                    <h1 className="text-xl font-semibold">Bank Soal</h1>
                     <Button asChild>
                         <Link href="/teacher/question-banks/create">
-                            Create Question Bank
+                            Buat Bank Soal Baru
                         </Link>
                     </Button>
                 </div>
 
                 <Card className="border border-sidebar-border/70 dark:border-sidebar-border">
                     <CardHeader>
-                        <CardTitle>Your Question Banks</CardTitle>
+                        <CardTitle>Bank Soal Anda</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {banks.data.length === 0 && (
                             <div className="rounded-lg border border-dashed border-sidebar-border/70 p-6 text-center text-sm text-muted-foreground">
-                                You don&apos;t have any question banks yet.
+                                Kamu belum punya bank soal.
                             </div>
                         )}
 
@@ -82,10 +82,17 @@ export default function QuestionBankIndex({ banks }: Props) {
                                         </p>
                                     </div>
                                     <div className="flex gap-2">
-                                        {/* Later: open bank detail & question list */}
-                                        {/* <Button variant="outline" size="sm" asChild>
-                                            <Link href={route('teacher.banks.show', bank.id)}>Open</Link>
-                                        </Button> */}
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            asChild
+                                        >
+                                            <Link
+                                                href={`/teacher/question-banks/${bank.id}`}
+                                            >
+                                                Detail
+                                            </Link>
+                                        </Button>
                                     </div>
                                 </div>
                             ))}

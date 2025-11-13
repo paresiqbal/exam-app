@@ -51,6 +51,37 @@ class QuestionBankController extends Controller
             ->with('success', 'Question bank created.');
     }
 
+    public function show(QuestionBank $bank)
+    {
+        $bank->load(['questions.choices']);
+
+        return Inertia::render('teacher/questions/QuestionBankShow', [
+            'bank' => [
+                'id' => $bank->id,
+                'title' => $bank->title,
+                'description' => $bank->description,
+                'questions_count' => $bank->questions->count(),
+                'created_at' => $bank->created_at->toDateTimeString(),
+            ],
+            'questions' => $bank->questions->map(function ($q) {
+                return [
+                    'id' => $q->id,
+                    'type' => $q->type,
+                    'prompt' => $q->prompt,
+                    'max_score' => $q->max_score,
+                    'has_image' => (bool) $q->image_path,
+                    'correct_boolean' => $q->correct_boolean,
+                    'choices' => $q->choices->map(fn($c) => [
+                        'id' => $c->id,
+                        'label' => $c->label,
+                        'text' => $c->text,
+                        'is_correct' => (bool) $c->is_correct,
+                    ]),
+                ];
+            }),
+        ]);
+    }
+
     public function update(Request $request, QuestionBank $bank)
     {
         $validated = $request->validate([

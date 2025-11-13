@@ -8,9 +8,9 @@ import type { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Teacher Dashboard', href: '/teacher/dashboard' },
-    { title: 'Question Banks', href: '/teacher/question-banks' },
-    { title: 'Create Question Bank', href: '/teacher/question-banks/create' },
+    { title: 'Dashboard Guru', href: '/teacher/dashboard' },
+    { title: 'Bank Soal', href: '/teacher/question-banks' },
+    { title: 'Buat Bank Soal', href: '/teacher/question-banks/create' },
 ];
 
 export default function CreateQuestionBank() {
@@ -21,33 +21,32 @@ export default function CreateQuestionBank() {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        // 🔥 THIS is the important line:
-        post('/teacher/question-banks'); // NOT /create
+        post('/teacher/question-banks');
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Question Bank" />
+            <Head title="Buat Bank Soal" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">
-                        Create Question Bank
-                    </h1>
+                    <h1 className="text-xl font-semibold">Buat Bank Soal</h1>
                     <Button variant="outline" asChild>
-                        <Link href="/teacher/question-banks">Back to list</Link>
+                        <Link href="/teacher/question-banks">
+                            Kembali ke daftar
+                        </Link>
                     </Button>
                 </div>
 
-                <Card className="max-w-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                <Card className="border border-sidebar-border/70 dark:border-sidebar-border">
                     <CardHeader>
-                        <CardTitle>New Question Bank</CardTitle>
+                        <CardTitle>Bank Soal Baru</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={submit} className="space-y-4">
                             <div className="space-y-1">
                                 <label className="text-sm font-medium">
-                                    Title
+                                    Judul
                                 </label>
                                 <Input
                                     value={data.title}
@@ -65,7 +64,7 @@ export default function CreateQuestionBank() {
 
                             <div className="space-y-1">
                                 <label className="text-sm font-medium">
-                                    Description
+                                    Deskripsi
                                 </label>
                                 <Textarea
                                     value={data.description}
@@ -87,7 +86,7 @@ export default function CreateQuestionBank() {
                                 disabled={processing}
                                 className="w-full"
                             >
-                                {processing ? 'Saving...' : 'Create Bank'}
+                                {processing ? 'Menyimpan...' : 'Buat Bank'}
                             </Button>
                         </form>
                     </CardContent>

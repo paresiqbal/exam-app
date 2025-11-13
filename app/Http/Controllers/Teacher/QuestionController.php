@@ -35,7 +35,8 @@ class QuestionController extends Controller
                     'position'    => $i + 1,
                 ]);
             }
-            return response()->json($q->load('choices'), 201);
+
+            return redirect()->back()->with('success', 'Question added.');
         });
     }
 
@@ -50,6 +51,7 @@ class QuestionController extends Controller
             'max_score'        => $request->max_score,
             'correct_boolean'  => $request->boolean('correct_boolean'),
         ]);
-        return response()->json($q, 201);
+
+        return redirect()->back()->with('success', 'Question added.');
     }
 }

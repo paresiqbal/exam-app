@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
         Route::get('/question-banks', [QuestionBankController::class, 'index'])->name('index');
         Route::get('/question-banks/create', [QuestionBankController::class, 'create'])->name('create');
         Route::post('/question-banks', [QuestionBankController::class, 'store'])->name('store');
+        Route::get('/question-banks/{bank}', [QuestionBankController::class, 'show'])->name('banks.show');
         Route::put('/question-banks/{bank}', [QuestionBankController::class, 'update'])->name('update');
         Route::delete('/question-banks/{bank}', [QuestionBankController::class, 'destroy'])->name('destroy');
         Route::post('/questions/mcq', [QuestionController::class, 'storeMcq'])->name('questions.store.mcq');
