@@ -62,11 +62,11 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
      * QUESTION BANK ROUTES & QUESTION ROUTES
      */
     Route::prefix('teacher')->name('teacher.')->group(function () {
-        Route::get('/question-banks', [QuestionBankController::class, 'index'])->name('banks.index');
-        Route::get('/question-banks/create', [QuestionBankController::class, 'create'])->name('banks.create');
-        Route::post('/question-banks', [QuestionBankController::class, 'store'])->name('banks.store');
-        Route::put('/question-banks/{bank}', [QuestionBankController::class, 'update'])->name('banks.update');
-        Route::delete('/question-banks/{bank}', [QuestionBankController::class, 'destroy'])->name('banks.destroy');
+        Route::get('/question-banks', [QuestionBankController::class, 'index'])->name('index');
+        Route::get('/question-banks/create', [QuestionBankController::class, 'create'])->name('create');
+        Route::post('/question-banks', [QuestionBankController::class, 'store'])->name('store');
+        Route::put('/question-banks/{bank}', [QuestionBankController::class, 'update'])->name('update');
+        Route::delete('/question-banks/{bank}', [QuestionBankController::class, 'destroy'])->name('destroy');
         Route::post('/questions/mcq', [QuestionController::class, 'storeMcq'])->name('questions.store.mcq');
         Route::post('/questions/boolean', [QuestionController::class, 'storeBoolean'])->name('questions.store.boolean');
         Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');

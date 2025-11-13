@@ -11,14 +11,18 @@ class QuestionBank extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['owner_id', 'title', 'description'];
+    protected $fillable = [
+        'owner_id',
+        'title',
+        'description',
+    ];
 
-    public function owner(): BelongsTo
+    public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
-    public function questions(): HasMany
+    public function questions()
     {
         return $this->hasMany(Question::class);
     }

@@ -81,7 +81,12 @@ export default function QuestionBankIndex({ banks }: Props) {
                                             ).toLocaleString()}
                                         </p>
                                     </div>
-                                    <div className="flex gap-2"></div>
+                                    <div className="flex gap-2">
+                                        {/* Later: open bank detail & question list */}
+                                        {/* <Button variant="outline" size="sm" asChild>
+                                            <Link href={route('teacher.banks.show', bank.id)}>Open</Link>
+                                        </Button> */}
+                                    </div>
                                 </div>
                             ))}
                         </div>

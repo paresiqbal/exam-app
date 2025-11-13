@@ -1,15 +1,14 @@
-// resources/js/Pages/teacher/question/CreateQuestionBank.tsx
+// resources/js/Pages/teacher/questions/CreateQuestionBank.tsx
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Teacher Dashboard', href: dashboard().url },
+    { title: 'Teacher Dashboard', href: '/teacher/dashboard' },
     { title: 'Question Banks', href: '/teacher/question-banks' },
     { title: 'Create Question Bank', href: '/teacher/question-banks/create' },
 ];
@@ -20,9 +19,10 @@ export default function CreateQuestionBank() {
         description: '',
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/teacher/question-banks/create');
+        // 🔥 THIS is the important line:
+        post('/teacher/question-banks'); // NOT /create
     };
 
     return (
@@ -35,9 +35,7 @@ export default function CreateQuestionBank() {
                         Create Question Bank
                     </h1>
                     <Button variant="outline" asChild>
-                        <Link href="/teacher/question-banks/">
-                            Back to list
-                        </Link>
+                        <Link href="/teacher/question-banks">Back to list</Link>
                     </Button>
                 </div>
 
@@ -46,7 +44,7 @@ export default function CreateQuestionBank() {
                         <CardTitle>New Question Bank</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={submit} className="space-y-4">
                             <div className="space-y-1">
                                 <label className="text-sm font-medium">
                                     Title
@@ -56,7 +54,7 @@ export default function CreateQuestionBank() {
                                     onChange={(e) =>
                                         setData('title', e.target.value)
                                     }
-                                    placeholder="e.g. Basic Physics - Semester 1"
+                                    placeholder="e.g. Bank Soal Matematika Kelas 10"
                                 />
                                 {errors.title && (
                                     <p className="mt-1 text-xs text-red-500">
@@ -74,7 +72,7 @@ export default function CreateQuestionBank() {
                                     onChange={(e) =>
                                         setData('description', e.target.value)
                                     }
-                                    placeholder="Short description (optional)"
+                                    placeholder="Deskripsi singkat (opsional)"
                                     rows={4}
                                 />
                                 {errors.description && (
