@@ -29,7 +29,16 @@ const mainNavItems: NavItem[] = [
         icon: Folder,
         items: [
             { title: 'Semua Ujian', href: '/admin/exams' },
-            { title: 'Buat Ujian', href: '/admin/exams/create' }, // <- create page
+            { title: 'Buat Ujian', href: '/admin/exams/create' },
+        ],
+    },
+    {
+        title: 'Soal Ujian',
+        href: '#',
+        icon: Folder,
+        items: [
+            { title: 'Semua Soal', href: '/admin/exams' },
+            // { title: 'Buat Soal', href: '/admin/exams/create' },
         ],
     },
 ];

@@ -7,16 +7,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreQuestionBankRequest;
 use App\Models\QuestionBank;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class QuestionBankController extends Controller
 {
     public function index()
     {
         $banks = QuestionBank::withCount('questions')
-            ->where('owner_id', Auth::id())
-            ->latest()->paginate(20);
+            ->where('owner_id', auth()->Auth::id())
+            ->latest()
+            ->paginate(10)
+            ->through(fn($bank) => [
+                'id' => $bank->id,
+                'title' => $bank->title,
+                'description' => $bank->description,
+                'questions_count' => $bank->questions_count,
+                'created_at' => $bank->created_at->toDateTimeString(),
+            ]);
 
-        return response()->json($banks);
+        return Inertia::render('teacher/questions/QuestionBankIndex', [
+            'banks' => $banks,
+        ]);
     }
 
     public function store(StoreQuestionBankRequest $request)

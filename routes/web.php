@@ -7,6 +7,8 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ExamQuestionController;
+use App\Http\Controllers\Teacher\QuestionBankController;
+use App\Http\Controllers\Teacher\QuestionController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -36,6 +38,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])
         Route::get('/dashboard', fn() => Inertia::render('admin/dashboard'))
             ->name('dashboard');
 
+        /**
+         * EXAM ROUTES
+         */
         Route::prefix('exams')->name('exams.')->group(function () {
             Route::get('/', [ExamController::class, 'index'])->name('index');
             Route::get('/create', [ExamController::class, 'create'])->name('create');
@@ -53,21 +58,20 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
         return Inertia::render('teacher/dashboard');
     })->name('teacher.dashboard');
 
-    // Route teacher lain
-});
-
-// ADMIN & TEACHER routes
-Route::middleware(['auth', 'role:admin,teacher'])
-    ->prefix('admin/exams/{exam}')
-    ->name('admin.exams.')
-    ->group(function () {
-        Route::get('questions',        [ExamQuestionController::class, 'index'])->name('questions.index');
-        Route::get('questions/create', [ExamQuestionController::class, 'create'])->name('questions.create');
-        Route::post('questions',       [ExamQuestionController::class, 'store'])->name('questions.store');
-        Route::get('questions/{q}/edit', [ExamQuestionController::class, 'edit'])->name('questions.edit');
-        Route::put('questions/{q}',      [ExamQuestionController::class, 'update'])->name('questions.update');
-        Route::delete('questions/{q}',   [ExamQuestionController::class, 'destroy'])->name('questions.destroy');
+    /**
+     * QUESTION BANK ROUTES & QUESTION ROUTES
+     */
+    Route::prefix('teacher')->name('teacher.')->group(function () {
+        Route::get('/question-banks', [QuestionBankController::class, 'index'])->name('banks.index');
+        Route::post('/question-banks', [QuestionBankController::class, 'store'])->name('banks.store');
+        Route::put('/question-banks/{bank}', [QuestionBankController::class, 'update'])->name('banks.update');
+        Route::delete('/question-banks/{bank}', [QuestionBankController::class, 'destroy'])->name('banks.destroy');
+        Route::post('/questions/mcq', [QuestionController::class, 'storeMcq'])->name('questions.store.mcq');
+        Route::post('/questions/boolean', [QuestionController::class, 'storeBoolean'])->name('questions.store.boolean');
+        Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+        Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     });
+});
 
 // STUDENT routes
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
