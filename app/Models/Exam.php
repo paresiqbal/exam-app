@@ -43,6 +43,6 @@ class Exam extends Model
         return $this->belongsToMany(Question::class, 'exam_question')
             ->withPivot(['position', 'score_override', 'shuffle_choices'])
             ->withTimestamps()
-            ->orderBy('pivot_position');
+            ->orderByPivot('position');
     }
 }

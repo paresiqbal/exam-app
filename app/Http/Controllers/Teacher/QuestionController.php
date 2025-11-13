@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMcqQuestionRequest;
 use App\Http\Requests\StoreBooleanQuestionRequest;
-use App\Http\Requests\UpdateQuestionRequest;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Question;
 use App\Models\QuestionChoice;
 use Illuminate\Support\Facades\DB;
@@ -53,5 +53,23 @@ class QuestionController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Question added.');
+    }
+
+    public function destroy(Question $question)
+    {
+        // make sure only the author (teacher) can delete
+        if ($question->author_id !== Auth::id()) { // or auth()->id()
+            abort(403, 'Unauthorized');
+        }
+
+        // optional: block delete if already used in an exam
+        if ($question->exams()->exists()) {
+            return back()->with('error', 'Cannot delete question that is already assigned to an exam.');
+        }
+
+        $question->choices()->delete();
+        $question->delete();
+
+        return back()->with('success', 'Question deleted.');
     }
 }

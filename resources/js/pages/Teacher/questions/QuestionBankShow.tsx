@@ -4,7 +4,19 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface ChoiceForm {
     text: string;
@@ -445,7 +457,61 @@ export default function QuestionBankShow({ bank, questions }: Props) {
                                             Score: {q.max_score}
                                         </span>
                                     </div>
+
+                                    <div className="flex gap-2">
+                                        {/* Later: add Edit here too */}
+
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    size="sm"
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </AlertDialogTrigger>
+
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>
+                                                        Delete this question?
+                                                    </AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be
+                                                        undone. The question
+                                                        will be permanently
+                                                        removed from this bank.
+                                                        If it is already
+                                                        assigned to an exam,
+                                                        deletion may be blocked
+                                                        by the server.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>
+                                                        Cancel
+                                                    </AlertDialogCancel>
+
+                                                    <AlertDialogAction
+                                                        onClick={() => {
+                                                            router.delete(
+                                                                `/teacher/questions/${q.id}`,
+                                                                {
+                                                                    preserveScroll: true,
+                                                                },
+                                                            );
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
                                 </div>
+
                                 <p className="mt-2 font-medium">{q.prompt}</p>
 
                                 {q.type === 'mcq' && q.choices.length > 0 && (
