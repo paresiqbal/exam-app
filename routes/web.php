@@ -63,6 +63,7 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
      */
     Route::prefix('teacher')->name('teacher.')->group(function () {
         Route::get('/question-banks', [QuestionBankController::class, 'index'])->name('banks.index');
+        Route::get('/question-banks/create', [QuestionBankController::class, 'create'])->name('banks.create');
         Route::post('/question-banks', [QuestionBankController::class, 'store'])->name('banks.store');
         Route::put('/question-banks/{bank}', [QuestionBankController::class, 'update'])->name('banks.update');
         Route::delete('/question-banks/{bank}', [QuestionBankController::class, 'destroy'])->name('banks.destroy');

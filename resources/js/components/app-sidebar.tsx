@@ -1,4 +1,3 @@
-// resources/js/components/app-sidebar.tsx
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -13,35 +12,9 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Ujian',
-        href: '#',
-        icon: Folder,
-        items: [
-            { title: 'Semua Ujian', href: '/admin/exams' },
-            { title: 'Buat Ujian', href: '/admin/exams/create' },
-        ],
-    },
-    {
-        title: 'Soal Ujian',
-        href: '#',
-        icon: Folder,
-        items: [
-            { title: 'Semua Soal', href: '/admin/exams' },
-            // { title: 'Buat Soal', href: '/admin/exams/create' },
-        ],
-    },
-];
 
 const footerNavItems: NavItem[] = [
     {
@@ -57,6 +30,70 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const page = usePage<{ auth: { user: { role: string } | null } }>();
+    const role = page.props.auth.user?.role;
+
+    let mainNavItems: NavItem[] = [];
+
+    if (role === 'admin') {
+        mainNavItems = [
+            {
+                title: 'Dashboard',
+                href: dashboard(),
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Ujian',
+                href: '#',
+                icon: Folder,
+                items: [
+                    { title: 'Semua Ujian', href: '/admin/exams' },
+                    { title: 'Buat Ujian', href: '/admin/exams/create' },
+                ],
+            },
+        ];
+    } else if (role === 'teacher') {
+        mainNavItems = [
+            {
+                title: 'Dashboard',
+                href: '/teacher/dashboard',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Ujian',
+                href: '#',
+                icon: Folder,
+                items: [
+                    { title: 'Semua Ujian', href: '/teacher/exams' },
+                    { title: 'Buat Ujian', href: '/teacher/exams/create' },
+                ],
+            },
+            {
+                title: 'Bank Soal',
+                href: '#',
+                icon: Folder,
+                items: [
+                    {
+                        title: 'Semua Bank Soal',
+                        href: '/teacher/question-banks',
+                    },
+                    {
+                        title: 'Buat Bank Soal',
+                        href: '/teacher/question-banks/create',
+                    },
+                ],
+            },
+        ];
+    } else {
+        mainNavItems = [
+            {
+                title: 'Dashboard',
+                href: dashboard(),
+                icon: LayoutGrid,
+            },
+        ];
+    }
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
