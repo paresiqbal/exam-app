@@ -89,7 +89,6 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
         return Inertia::render('student/dashboard');
     })->name('student.dashboard');
 
-
     Route::prefix('student')->name('student.')->group(function () {
         Route::post('/exams/join', [StudentExamController::class, 'join'])
             ->name('exams.join');
@@ -100,22 +99,20 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
         Route::get(
             '/attempts/{attempt}/questions/{number}',
             [StudentExamAnswerController::class, 'show']
-        )
-            ->name('attempt.questions.show');
+        )->name('attempt.questions.show');
 
         Route::post(
             '/attempts/{attempt}/answer',
             [StudentExamAnswerController::class, 'save']
-        )
-            ->name('attempt.answer.save');
+        )->name('attempt.answer.save');
 
         Route::post(
             '/attempts/{attempt}/finish',
             [StudentExamAnswerController::class, 'finish']
-        )
-            ->name('attempt.finish');
+        )->name('attempt.finish');
     });
 });
+
 
 
 

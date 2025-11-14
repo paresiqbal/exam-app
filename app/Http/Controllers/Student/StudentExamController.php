@@ -11,9 +11,7 @@ use Inertia\Response;
 
 class StudentExamController extends Controller
 {
-    /**
-     * Siswa mengisi token untuk masuk ujian
-     */
+
     public function join(Request $request)
     {
         $data = $request->validate([
@@ -22,10 +20,8 @@ class StudentExamController extends Controller
 
         $token = $data['token'];
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
 
-        // Cari exam berdasarkan token
         $exam = Exam::where('token', $token)->first();
 
         if (! $exam) {
@@ -34,7 +30,6 @@ class StudentExamController extends Controller
             ]);
         }
 
-        // Cek waktu ujian
         $now = now();
         if ($exam->start_at->isFuture()) {
             return back()->withErrors([
@@ -48,14 +43,12 @@ class StudentExamController extends Controller
             ]);
         }
 
-        // Optional: cek status kalau kamu pakai 'upcoming', 'running', 'done'
         if ($exam->status === 'done') {
             return back()->withErrors([
                 'token' => 'Ujian ini sudah selesai.',
             ]);
         }
 
-        // Cek apakah siswa sudah punya attempt
         $existingAttempt = ExamAttempt::where('exam_id', $exam->id)
             ->where('user_id', $user->id)
             ->latest()
@@ -67,12 +60,10 @@ class StudentExamController extends Controller
             ]);
         }
 
-        // Kalau sudah pernah mulai tapi belum selesai → lanjutkan
         if ($existingAttempt && ! $existingAttempt->finished_at) {
             return redirect()->route('student.attempts.show', $existingAttempt);
         }
 
-        // Buat attempt baru
         $attempt = ExamAttempt::create([
             'exam_id'    => $exam->id,
             'user_id'    => $user->id,
@@ -81,15 +72,14 @@ class StudentExamController extends Controller
             'passed'     => false,
         ]);
 
-        return redirect()->route('student.attempts.show', $attempt);
+        return redirect()->route('student.attempt.questions.show', [
+            'attempt' => $attempt->id,
+            'number'  => 1,
+        ]);
     }
 
-    /**
-     * Halaman attempt (nanti di sini isi soal)
-     */
     public function show(Request $request, ExamAttempt $attempt): Response
     {
-        // pastikan attempt ini milik user yang login
         if ($attempt->user_id !== $request->user()->id) {
             abort(403);
         }

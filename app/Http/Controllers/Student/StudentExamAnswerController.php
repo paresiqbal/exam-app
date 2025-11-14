@@ -11,19 +11,27 @@ use Inertia\Inertia;
 class StudentExamAnswerController extends Controller
 {
     /**
-     * Show question number X for the exam attempt
+     * Tampilkan soal ke-{number} untuk attempt ini
      */
     public function show(Request $request, ExamAttempt $attempt, int $number)
     {
-        // Authorization
+        // pastikan attempt ini milik user yang login
         if ($attempt->user_id !== $request->user()->id) {
             abort(403);
         }
 
-        // Load exam & questions
-        $exam = $attempt->exam()->with(['questions.choices'])->first();
+        // load exam + questions + choices
+        $exam = $attempt->exam()->with(['questions.choices'])->firstOrFail();
 
-        $questions = $exam->questions()->orderBy('exam_question.position')->get();
+        // ambil semua soal exam, urut berdasarkan position
+        $questions = $exam->questions()
+            ->with('choices')
+            ->orderBy('exam_question.position')
+            ->get();
+
+        if ($questions->isEmpty()) {
+            abort(404, 'Tidak ada soal pada ujian ini.');
+        }
 
         if ($number < 1 || $number > $questions->count()) {
             abort(404);
@@ -31,29 +39,36 @@ class StudentExamAnswerController extends Controller
 
         $question = $questions[$number - 1];
 
-        // Get existing answer
+        // cari jawaban yang sudah pernah disimpan (kalau ada)
         $existingAnswer = ExamAnswer::where('exam_attempt_id', $attempt->id)
             ->where('question_id', $question->id)
             ->first();
 
         return Inertia::render('student/exams/QuestionPage', [
-            'attempt'  => $attempt,
-            'question' => [
-                'id'      => $question->id,
-                'type'    => $question->type,
-                'prompt'  => $question->prompt,
-                'image'   => $question->image_path,
-                'choices' => $question->choices()->orderBy('position')->get(),
-                'max_score' => $question->max_score,
+            'attempt' => [
+                'id'      => $attempt->id,
+                'exam_id' => $attempt->exam_id,
             ],
-            'number'         => $number,
+            'question' => [
+                'id'        => $question->id,
+                'type'      => $question->type,
+                'prompt'    => $question->prompt,
+                'image'     => $question->image_path,
+                'max_score' => $question->max_score,
+                'choices'   => $question->type === 'mcq'
+                    ? $question->choices()
+                    ->orderBy('position')
+                    ->get(['id', 'label', 'option_text'])
+                    : [],
+            ],
+            'number'          => $number,
             'total_questions' => $questions->count(),
-            'answer'         => $existingAnswer ? $existingAnswer->answer : null,
+            'answer'          => $existingAnswer?->answer ?? null,
         ]);
     }
 
     /**
-     * Save answer for a question
+     * Simpan jawaban untuk satu soal
      */
     public function save(Request $request, ExamAttempt $attempt)
     {
@@ -63,32 +78,41 @@ class StudentExamAnswerController extends Controller
 
         $data = $request->validate([
             'question_id' => ['required', 'exists:questions,id'],
-            'answer'      => ['nullable', 'array'],
-            'boolean'     => ['nullable', 'boolean'],
+            'answer'      => ['nullable', 'array'],   // untuk mcq (array id pilihan)
+            'boolean'     => ['nullable', 'boolean'], // untuk boolean
         ]);
 
         $question = Question::with('choices')->findOrFail($data['question_id']);
 
-        // Determine correctness
         $isCorrect = null;
-        $score = 0;
+        $score     = 0;
 
         if ($question->type === 'mcq') {
             $submitted = $data['answer'] ?? [];
 
-            $correctChoices = $question->choices()->where('is_correct', true)->pluck('id')->toArray();
+            // id choices yang benar
+            $correctChoices = $question->choices()
+                ->where('is_correct', true)
+                ->pluck('id')
+                ->toArray();
+
+            // sort agar perbandingan tidak tergantung urutan klik
+            sort($submitted);
+            sort($correctChoices);
 
             $isCorrect = ($submitted === $correctChoices);
+            $score     = $isCorrect ? $question->max_score : 0;
 
-            $score = $isCorrect ? $question->max_score : 0;
-        }
-
-        if ($question->type === 'boolean') {
-            $submitted = $data['boolean'] ?? null;
+            $storedAnswer = $submitted;
+        } elseif ($question->type === 'boolean') {
+            $submitted = $data['boolean'];
 
             $isCorrect = ($submitted === $question->correct_boolean);
+            $score     = $isCorrect ? $question->max_score : 0;
 
-            $score = $isCorrect ? $question->max_score : 0;
+            $storedAnswer = $submitted;
+        } else {
+            $storedAnswer = null;
         }
 
         ExamAnswer::updateOrCreate(
@@ -97,17 +121,17 @@ class StudentExamAnswerController extends Controller
                 'question_id'     => $question->id,
             ],
             [
-                'answer'     => $question->type === 'mcq' ? $data['answer'] : $data['boolean'],
+                'answer'     => $storedAnswer,
                 'is_correct' => $isCorrect,
                 'score'      => $score,
             ]
         );
 
-        return back()->with('success', 'Answer saved');
+        return back()->with('success', 'Jawaban tersimpan.');
     }
 
     /**
-     * Finish exam
+     * Selesaikan ujian
      */
     public function finish(Request $request, ExamAttempt $attempt)
     {
@@ -115,16 +139,17 @@ class StudentExamAnswerController extends Controller
             abort(403);
         }
 
-        // calculate total score
+        // hitung total skor dari semua jawaban
         $totalScore = $attempt->answers()->sum('score');
 
         $attempt->update([
             'finished_at' => now(),
             'score'       => $totalScore,
-            'passed'      => $totalScore >= 50, // <-- change your pass rule here
+            'passed'      => $totalScore >= 50, // aturan lulus bisa kamu sesuaikan
         ]);
 
-        return redirect()->route('student.dashboard')
-            ->with('success', 'Ujian selesai');
+        return redirect()
+            ->route('student.dashboard')
+            ->with('success', 'Ujian selesai. Skor kamu: ' . $totalScore);
     }
 }
