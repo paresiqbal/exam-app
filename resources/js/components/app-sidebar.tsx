@@ -60,15 +60,6 @@ export function AppSidebar() {
                 icon: LayoutGrid,
             },
             {
-                title: 'Ujian',
-                href: '#',
-                icon: Folder,
-                items: [
-                    { title: 'Semua Ujian', href: '/teacher/exams' },
-                    { title: 'Buat Ujian', href: '/teacher/exams/create' },
-                ],
-            },
-            {
                 title: 'Bank Soal',
                 href: '#',
                 icon: Folder,

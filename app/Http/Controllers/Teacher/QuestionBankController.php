@@ -14,7 +14,7 @@ class QuestionBankController extends Controller
     public function index()
     {
         $banks = QuestionBank::withCount('questions')
-            ->where('owner_id', Auth::id())
+            ->where('created_by', Auth::id())
             ->latest()
             ->paginate(10)
             ->through(fn($bank) => [
@@ -43,7 +43,7 @@ class QuestionBankController extends Controller
         ]);
 
         QuestionBank::create([
-            'owner_id'    => Auth::id(),
+            'created_by'  => Auth::id(),
             'title'       => $validated['title'],
             'description' => $validated['description'] ?? null,
         ]);
@@ -97,29 +97,21 @@ class QuestionBankController extends Controller
 
     public function destroy(QuestionBank $bank)
     {
-        // Only owner can delete
-        if ($bank->owner_id !== Auth::id()) {
+        if ($bank->created_by !== Auth::id()) {
             abort(403, 'Unauthorized');
         }
 
         // Optional safety:
-        // Block if any question in this bank is already used in an exam
         if ($bank->questions()->whereHas('exams')->exists()) {
             return back()->with('error', 'Cannot delete this bank because some questions are already assigned to exams.');
         }
 
         DB::transaction(function () use ($bank) {
-            // Delete questions + their choices
             foreach ($bank->questions as $question) {
-                // delete MCQ choices (boolean questions just have none)
                 $question->choices()->delete();
-
-                // if you later add images, you can delete image files here too
-
                 $question->delete();
             }
 
-            // Finally delete the bank itself
             $bank->delete();
         });
 
