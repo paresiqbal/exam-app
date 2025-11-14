@@ -11,20 +11,14 @@ use Inertia\Inertia;
 
 class StudentExamAnswerController extends Controller
 {
-    /**
-     * Tampilkan soal ke-{number} untuk attempt ini
-     */
     public function show(Request $request, ExamAttempt $attempt, int $number)
     {
-        // pastikan attempt ini milik user yang login
         if ($attempt->user_id !== $request->user()->id) {
             abort(403);
         }
 
-        // load exam + questions + choices
         $exam = $attempt->exam()->with(['questions.choices'])->firstOrFail();
 
-        // ambil semua soal exam, urut berdasarkan position
         $questions = $exam->questions()
             ->with('choices')
             ->orderBy('exam_question.position')
@@ -40,7 +34,6 @@ class StudentExamAnswerController extends Controller
 
         $question = $questions[$number - 1];
 
-        // cari jawaban yang sudah pernah disimpan (kalau ada)
         $existingAnswer = ExamAnswer::where('exam_attempt_id', $attempt->id)
             ->where('question_id', $question->id)
             ->first();
@@ -72,9 +65,6 @@ class StudentExamAnswerController extends Controller
         ]);
     }
 
-    /**
-     * Simpan jawaban untuk satu soal
-     */
     public function save(Request $request, ExamAttempt $attempt)
     {
         if ($attempt->user_id !== $request->user()->id) {
@@ -95,13 +85,11 @@ class StudentExamAnswerController extends Controller
         if ($question->type === 'mcq') {
             $submitted = $data['answer'] ?? [];
 
-            // id choices yang benar
             $correctChoices = $question->choices()
                 ->where('is_correct', true)
                 ->pluck('id')
                 ->toArray();
 
-            // sort agar perbandingan tidak tergantung urutan klik
             sort($submitted);
             sort($correctChoices);
 
@@ -135,22 +123,19 @@ class StudentExamAnswerController extends Controller
         return back()->with('success', 'Jawaban tersimpan.');
     }
 
-    /**
-     * Selesaikan ujian
-     */
+
     public function finish(Request $request, ExamAttempt $attempt)
     {
         if ($attempt->user_id !== $request->user()->id) {
             abort(403);
         }
 
-        // hitung total skor dari semua jawaban
         $totalScore = $attempt->answers()->sum('score');
 
         $attempt->update([
             'finished_at' => now(),
             'score'       => $totalScore,
-            'passed'      => $totalScore >= 50, // aturan lulus bisa kamu sesuaikan
+            'passed'      => $totalScore >= 50,
         ]);
 
         return redirect()
