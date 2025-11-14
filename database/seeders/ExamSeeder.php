@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Exam;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class ExamSeeder extends Seeder
 {
@@ -13,37 +13,40 @@ class ExamSeeder extends Seeder
     {
         $admin = User::where('role', 'admin')->first();
 
-        if (!$admin) {
-            // Kalau belum ada admin, skip supaya nggak error
+        if (! $admin) {
+            echo "No admin found, skipping ExamSeeder.\n";
             return;
         }
 
         $now = Carbon::now();
 
+        // Exam yang sedang berjalan
         Exam::updateOrCreate(
-
-            ['title' => 'Simulasi Ujian Masuk 1'],
+            ['token' => 'RUN-001'],
             [
                 'created_by'       => $admin->id,
-                'description'      => 'Ujian simulasi untuk calon mahasiswa.',
-                'token'            => 'SIMULASI-001',
-                'start_at'         => $now->copy()->addDay(),
-                'end_at'           => $now->copy()->addDays(2),
+                'title'            => 'Ujian Masuk Online – Gelombang 1',
+                'description'      => 'Ujian resmi gelombang pertama.',
+                'token'            => 'RUN-001',
+                'start_at'         => $now->copy()->subHour(),
+                'end_at'           => $now->copy()->addHours(2),
                 'duration_minutes' => 90,
-                'status' => 'upcoming'
+                'status'           => 'running',
             ]
         );
 
+        // Exam yang akan datang
         Exam::updateOrCreate(
-            ['title' => 'Try Out Nasional'],
+            ['token' => 'UP-001'],
             [
                 'created_by'       => $admin->id,
-                'description'      => 'Try out nasional semua jurusan.',
-                'token'            => 'TRYOUT-2025',
-                'start_at'         => $now->copy()->addDays(3),
-                'end_at'           => $now->copy()->addDays(4),
+                'title'            => 'Simulasi Ujian Nasional',
+                'description'      => 'Simulasi ujian nasional seluruh jurusan.',
+                'token'            => 'UP-001',
+                'start_at'         => $now->copy()->addDay(),
+                'end_at'           => $now->copy()->addDays(2),
                 'duration_minutes' => 120,
-                'status' => 'upcoming'
+                'status'           => 'upcoming',
             ]
         );
     }

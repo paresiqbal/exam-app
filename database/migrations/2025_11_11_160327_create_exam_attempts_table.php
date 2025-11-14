@@ -6,28 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('exam_attempts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('exam_id')->constrained();
-            $table->foreignId('user_id')->constrained(); // student
+            $table->foreignId('user_id')->constrained();
             $table->dateTime('started_at')->nullable();
             $table->dateTime('finished_at')->nullable();
             $table->integer('score')->nullable();
             $table->boolean('passed')->default(false);
             $table->timestamps();
 
-            $table->unique(['exam_id', 'user_id']); // satu student sekali ikut
+            $table->unique(['exam_id', 'user_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('exam_attempts');

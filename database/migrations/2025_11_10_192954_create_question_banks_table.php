@@ -10,8 +10,7 @@ return new class extends Migration {
     {
         Schema::create('question_banks', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('created_by')
+            $table->foreignId('owner_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
