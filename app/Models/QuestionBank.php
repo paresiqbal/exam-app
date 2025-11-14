@@ -12,7 +12,7 @@ class QuestionBank extends Model
     use HasFactory;
 
     protected $fillable = [
-        'created_by',
+        'owner_id',
         'title',
         'description',
     ];
