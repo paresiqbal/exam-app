@@ -46,7 +46,7 @@ class UniversitySeeder extends Seeder
                 $slug = Str::slug($university->slug . '-' . $majorData['name']);
 
                 Major::updateOrCreate(
-                    ['slug' => $slug], // cari berdasarkan slug
+                    ['slug' => $slug],
                     [
                         'university_id' => $university->id,
                         'name'          => $majorData['name'],
