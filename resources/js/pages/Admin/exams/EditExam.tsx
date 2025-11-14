@@ -18,7 +18,7 @@ type ExamQuestionPivot = {
 
 type ExamQuestion = {
     id: number;
-    text: string; // <- SESUAIKAN ke nama kolom kamu
+    text: string;
     pivot: ExamQuestionPivot;
 };
 
@@ -36,7 +36,7 @@ type Exam = {
 
 type AvailableQuestion = {
     id: number;
-    text: string; // <- SESUAIKAN ke nama kolom kamu (misal "question" / "body")
+    text: string;
 };
 
 type PageProps = {
