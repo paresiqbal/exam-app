@@ -459,7 +459,18 @@ export default function QuestionBankShow({ bank, questions }: Props) {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        {/* Later: add Edit here too */}
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            asChild
+                                        >
+                                            <Link
+                                                href={`/teacher/question-banks/${bank.id}/questions/${q.id}/edit`}
+                                            >
+                                                Edit
+                                            </Link>
+                                        </Button>
 
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>

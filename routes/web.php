@@ -68,6 +68,12 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
         Route::get('/question-banks/{bank}', [QuestionBankController::class, 'show'])->name('banks.show');
         Route::put('/question-banks/{bank}', [QuestionBankController::class, 'update'])->name('update');
         Route::delete('/question-banks/{bank}', [QuestionBankController::class, 'destroy'])->name('destroy');
+        Route::get(
+            '/question-banks/{bank}/questions/{question}/edit',
+            [QuestionController::class, 'edit']
+        )->name('questions.edit');
+
+        // question
         Route::post('/questions/mcq', [QuestionController::class, 'storeMcq'])->name('questions.store.mcq');
         Route::post('/questions/boolean', [QuestionController::class, 'storeBoolean'])->name('questions.store.boolean');
         Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
