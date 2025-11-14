@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ExamQuestionController;
 use App\Http\Controllers\Student\StudentExamController;
+use App\Http\Controllers\StudentExamAnswerController;
 use App\Http\Controllers\Teacher\QuestionBankController;
 use App\Http\Controllers\Teacher\QuestionController;
 
@@ -95,6 +96,24 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
 
         Route::get('/attempts/{attempt}', [StudentExamController::class, 'show'])
             ->name('attempts.show');
+
+        Route::get(
+            '/attempts/{attempt}/questions/{number}',
+            [StudentExamAnswerController::class, 'show']
+        )
+            ->name('attempt.questions.show');
+
+        Route::post(
+            '/attempts/{attempt}/answer',
+            [StudentExamAnswerController::class, 'save']
+        )
+            ->name('attempt.answer.save');
+
+        Route::post(
+            '/attempts/{attempt}/finish',
+            [StudentExamAnswerController::class, 'finish']
+        )
+            ->name('attempt.finish');
     });
 });
 
