@@ -5,6 +5,23 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
+type Bank = {
+    id: number;
+    title: string;
+};
+
+type ExamQuestionPivot = {
+    position: number | null;
+    score_override: number | null;
+    shuffle_choices: boolean;
+};
+
+type ExamQuestion = {
+    id: number;
+    text: string; // <- SESUAIKAN ke nama kolom kamu
+    pivot: ExamQuestionPivot;
+};
+
 type Exam = {
     id: number;
     title: string;
@@ -13,10 +30,35 @@ type Exam = {
     start_at: string;
     end_at: string;
     duration_minutes: number;
+    question_bank_id: number | null;
+    questions: ExamQuestion[];
+};
+
+type AvailableQuestion = {
+    id: number;
+    text: string; // <- SESUAIKAN ke nama kolom kamu (misal "question" / "body")
 };
 
 type PageProps = {
     exam: Exam;
+    banks: Bank[];
+    available_questions: AvailableQuestion[];
+};
+
+type ExamFormData = {
+    title: string;
+    description: string | null;
+    token: string | null;
+    start_at: string;
+    end_at: string;
+    duration_minutes: number;
+    question_bank_id: number | '' | null;
+    questions: {
+        id: number;
+        position: number | null;
+        score_override: number | null;
+        shuffle_choices: boolean;
+    }[];
 };
 
 function formatDateTimeLocal(value: string): string {
@@ -25,15 +67,23 @@ function formatDateTimeLocal(value: string): string {
 }
 
 export default function EditExam() {
-    const { exam } = usePage<PageProps>().props;
+    const { exam, banks, available_questions } = usePage<PageProps>().props;
 
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, put, processing, errors } = useForm<ExamFormData>({
         title: exam.title ?? '',
         description: exam.description ?? '',
         token: exam.token ?? '',
         start_at: formatDateTimeLocal(exam.start_at),
         end_at: formatDateTimeLocal(exam.end_at),
         duration_minutes: exam.duration_minutes ?? 60,
+        question_bank_id: exam.question_bank_id ?? '',
+        questions:
+            exam.questions?.map((q, index) => ({
+                id: q.id,
+                position: q.pivot.position ?? index + 1,
+                score_override: q.pivot.score_override,
+                shuffle_choices: q.pivot.shuffle_choices,
+            })) ?? [],
     });
 
     const submit = (e: React.FormEvent) => {
@@ -47,16 +97,52 @@ export default function EditExam() {
         { title: 'Edit Ujian', href: `/admin/exams/${exam.id}/edit` },
     ];
 
+    const toggleQuestion = (questionId: number) => {
+        const exists = data.questions.find((q) => q.id === questionId);
+
+        if (exists) {
+            setData(
+                'questions',
+                data.questions.filter((q) => q.id !== questionId),
+            );
+        } else {
+            setData('questions', [
+                ...data.questions,
+                {
+                    id: questionId,
+                    position: data.questions.length + 1,
+                    score_override: null,
+                    shuffle_choices: false,
+                },
+            ]);
+        }
+    };
+
+    const isSelected = (id: number) => data.questions.some((q) => q.id === id);
+
+    const updateQuestionField = (
+        questionId: number,
+        field: 'position' | 'score_override' | 'shuffle_choices',
+        value: number | boolean | null,
+    ) => {
+        const updated = data.questions.map((q) =>
+            q.id === questionId ? { ...q, [field]: value } : q,
+        );
+        setData('questions', updated);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Ujian" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <h1 className="mb-6 text-2xl font-semibold">Edit Ujian</h1>
+
                 <form
                     onSubmit={submit}
-                    className="max-w-screen space-y-5 rounded-xl border bg-card p-6"
+                    className="max-w-screen space-y-6 rounded-xl border bg-card p-6"
                 >
+                    {/* Basic Info */}
                     <div>
                         <label className="mb-1 block text-sm font-medium">
                             Judul Ujian
@@ -79,7 +165,7 @@ export default function EditExam() {
                             Deskripsi Ujian
                         </label>
                         <textarea
-                            value={data.description}
+                            value={data.description ?? ''}
                             onChange={(e) =>
                                 setData('description', e.target.value)
                             }
@@ -92,6 +178,7 @@ export default function EditExam() {
                         )}
                     </div>
 
+                    {/* Waktu & Token */}
                     <div className="grid gap-4 md:grid-cols-2">
                         <div>
                             <label className="mb-1 block text-sm font-medium">
@@ -161,7 +248,7 @@ export default function EditExam() {
                             </label>
                             <input
                                 type="text"
-                                value={data.token}
+                                value={data.token ?? ''}
                                 onChange={(e) =>
                                     setData('token', e.target.value)
                                 }
@@ -175,11 +262,207 @@ export default function EditExam() {
                         </div>
                     </div>
 
-                    <div className="flex gap-3">
+                    {/* Bank Soal */}
+                    <div>
+                        <label className="mb-1 block text-sm font-medium">
+                            Bank Soal
+                        </label>
+                        <select
+                            value={data.question_bank_id ?? ''}
+                            onChange={(e) =>
+                                setData(
+                                    'question_bank_id',
+                                    e.target.value
+                                        ? Number(e.target.value)
+                                        : '',
+                                )
+                            }
+                            className="w-full rounded-lg border px-3 py-2 text-sm"
+                        >
+                            <option value="">Pilih Bank Soal</option>
+                            {banks.map((bank) => (
+                                <option key={bank.id} value={bank.id}>
+                                    {bank.title}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.question_bank_id && (
+                            <p className="text-xs text-red-500">
+                                {errors.question_bank_id}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Pilih Soal & Detail Soal */}
+                    <div className="grid gap-4 lg:grid-cols-2">
+                        {/* List soal dari bank */}
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Pilih Soal untuk Ujian
+                            </label>
+                            <div className="max-h-72 space-y-2 overflow-y-auto rounded-lg border p-3 text-sm">
+                                {available_questions.length === 0 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        Tidak ada soal di bank ini.
+                                    </p>
+                                )}
+
+                                {available_questions.map((q) => (
+                                    <label
+                                        key={q.id}
+                                        className="flex cursor-pointer items-start gap-2 rounded-md p-2 hover:bg-muted"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="mt-1"
+                                            checked={isSelected(q.id)}
+                                            onChange={() =>
+                                                toggleQuestion(q.id)
+                                            }
+                                        />
+                                        <div>
+                                            <div className="font-medium">
+                                                {q.text}
+                                            </div>
+                                        </div>
+                                    </label>
+                                ))}
+                            </div>
+                            {errors.questions && (
+                                <p className="text-xs text-red-500">
+                                    {errors.questions}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Detail soal yang terpilih */}
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Urutan & Skor Soal yang Terpilih
+                            </label>
+
+                            {data.questions.length === 0 ? (
+                                <p className="text-xs text-muted-foreground">
+                                    Belum ada soal yang dipilih.
+                                </p>
+                            ) : (
+                                <div className="overflow-x-auto rounded-lg border">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-muted">
+                                            <tr>
+                                                <th className="px-3 py-2">#</th>
+                                                <th className="px-3 py-2">
+                                                    ID Soal
+                                                </th>
+                                                <th className="px-3 py-2">
+                                                    Posisi
+                                                </th>
+                                                <th className="px-3 py-2">
+                                                    Skor Override
+                                                </th>
+                                                <th className="px-3 py-2">
+                                                    Acak Pilihan?
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {data.questions.map((q, index) => (
+                                                <tr
+                                                    key={q.id}
+                                                    className="border-t"
+                                                >
+                                                    <td className="px-3 py-2">
+                                                        {index + 1}
+                                                    </td>
+                                                    <td className="px-3 py-2">
+                                                        {q.id}
+                                                    </td>
+                                                    <td className="px-3 py-2">
+                                                        <input
+                                                            type="number"
+                                                            className="w-20 rounded border px-2 py-1 text-xs"
+                                                            value={
+                                                                q.position ??
+                                                                index + 1
+                                                            }
+                                                            onChange={(e) =>
+                                                                updateQuestionField(
+                                                                    q.id,
+                                                                    'position',
+                                                                    Number(
+                                                                        e.target
+                                                                            .value,
+                                                                    ),
+                                                                )
+                                                            }
+                                                        />
+                                                    </td>
+                                                    <td className="px-3 py-2">
+                                                        <input
+                                                            type="number"
+                                                            className="w-24 rounded border px-2 py-1 text-xs"
+                                                            value={
+                                                                q.score_override ??
+                                                                ''
+                                                            }
+                                                            onChange={(e) => {
+                                                                const val =
+                                                                    e.target
+                                                                        .value ===
+                                                                    ''
+                                                                        ? null
+                                                                        : Number(
+                                                                              e
+                                                                                  .target
+                                                                                  .value,
+                                                                          );
+                                                                updateQuestionField(
+                                                                    q.id,
+                                                                    'score_override',
+                                                                    val,
+                                                                );
+                                                            }}
+                                                        />
+                                                    </td>
+                                                    <td className="px-3 py-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={
+                                                                q.shuffle_choices
+                                                            }
+                                                            onChange={(e) =>
+                                                                updateQuestionField(
+                                                                    q.id,
+                                                                    'shuffle_choices',
+                                                                    e.target
+                                                                        .checked,
+                                                                )
+                                                            }
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-3">
                         <Button type="submit" disabled={processing}>
                             {processing ? 'Menyimpan...' : 'Simpan Ujian'}
                         </Button>
-                        <Button variant="secondary">Batal</Button>
+
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => window.history.back()}
+                        >
+                            Batal
+                        </Button>
+
                         <DeleteExamButton exam={exam} />
                     </div>
                 </form>
