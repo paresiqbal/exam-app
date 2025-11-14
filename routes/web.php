@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     });
 
 // TEACHER routes
-Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:teacher,admin'])->group(function () {
     Route::get('/teacher/dashboard', function () {
         return Inertia::render('teacher/dashboard');
     })->name('teacher.dashboard');

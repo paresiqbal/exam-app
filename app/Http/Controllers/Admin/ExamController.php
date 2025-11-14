@@ -147,10 +147,19 @@ class ExamController extends Controller
 
     public function destroy(Exam $exam)
     {
+        // 1. Kalau sudah ada attempt, jangan hapus, tampilkan pesan rapi
+        if ($exam->attempts()->exists()) {
+            return back()->with('error', 'Tidak bisa menghapus ujian yang sudah pernah dikerjakan siswa.');
+        }
+
+        // 2. Lepaskan relasi soal (opsional, tergantung FK)
+        $exam->questions()->detach();
+
+        // 3. Hapus exam
         $exam->delete();
 
         return redirect()
             ->route('admin.exams.index')
-            ->with('success', 'Exam deleted successfully.');
+            ->with('success', 'Ujian berhasil dihapus.');
     }
 }

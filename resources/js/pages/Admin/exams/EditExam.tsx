@@ -131,6 +131,9 @@ export default function EditExam() {
         setData('questions', updated);
     };
 
+    const { flash } = usePage<{ flash: { success?: string; error?: string } }>()
+        .props;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Ujian" />
@@ -448,6 +451,18 @@ export default function EditExam() {
                             )}
                         </div>
                     </div>
+
+                    {flash.success && (
+                        <div className="mb-4 rounded-md bg-green-100 p-3 text-sm text-green-800">
+                            {flash.success}
+                        </div>
+                    )}
+
+                    {flash.error && (
+                        <div className="mb-4 rounded-md bg-red-100 p-3 text-sm text-red-800">
+                            {flash.error}
+                        </div>
+                    )}
 
                     {/* Actions */}
                     <div className="flex flex-wrap gap-3">
