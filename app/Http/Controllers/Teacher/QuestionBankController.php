@@ -7,6 +7,7 @@ use App\Models\QuestionBank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class QuestionBankController extends Controller
 {
@@ -96,8 +97,33 @@ class QuestionBankController extends Controller
 
     public function destroy(QuestionBank $bank)
     {
-        $bank->delete();
+        // Only owner can delete
+        if ($bank->owner_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
 
-        return redirect()->back()->with('success', 'Question bank deleted.');
+        // Optional safety:
+        // Block if any question in this bank is already used in an exam
+        if ($bank->questions()->whereHas('exams')->exists()) {
+            return back()->with('error', 'Cannot delete this bank because some questions are already assigned to exams.');
+        }
+
+        DB::transaction(function () use ($bank) {
+            // Delete questions + their choices
+            foreach ($bank->questions as $question) {
+                // delete MCQ choices (boolean questions just have none)
+                $question->choices()->delete();
+
+                // if you later add images, you can delete image files here too
+
+                $question->delete();
+            }
+
+            // Finally delete the bank itself
+            $bank->delete();
+        });
+
+        return redirect('/teacher/question-banks')
+            ->with('success', 'Question bank and its questions were deleted.');
     }
 }

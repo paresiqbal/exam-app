@@ -1,10 +1,20 @@
-// resources/js/Pages/teacher/question/QuestionBankIndex.tsx
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 interface QuestionBank {
     id: number;
@@ -82,6 +92,7 @@ export default function QuestionBankIndex({ banks }: Props) {
                                         </p>
                                     </div>
                                     <div className="flex gap-2">
+                                        {/* View / Open */}
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -90,9 +101,56 @@ export default function QuestionBankIndex({ banks }: Props) {
                                             <Link
                                                 href={`/teacher/question-banks/${bank.id}`}
                                             >
-                                                Detail
+                                                Open
                                             </Link>
                                         </Button>
+
+                                        {/* Delete with modal */}
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    size="sm"
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </AlertDialogTrigger>
+
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>
+                                                        Delete this question
+                                                        bank?
+                                                    </AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be
+                                                        undone. The bank &quot;
+                                                        {bank.title}&quot; will
+                                                        be deleted. You can only
+                                                        delete a bank that has
+                                                        no questions.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>
+                                                        Cancel
+                                                    </AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => {
+                                                            router.delete(
+                                                                `/teacher/question-banks/${bank.id}`,
+                                                                {
+                                                                    preserveScroll: true,
+                                                                },
+                                                            );
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
                                 </div>
                             ))}
