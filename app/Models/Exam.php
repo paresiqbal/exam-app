@@ -45,4 +45,9 @@ class Exam extends Model
             ->withTimestamps()
             ->orderByPivot('position');
     }
+
+    public function questionBank()
+    {
+        return $this->belongsTo(QuestionBank::class);
+    }
 }

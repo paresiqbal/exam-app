@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
+use App\Models\QuestionBank;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -22,14 +23,20 @@ class ExamController extends Controller
         ]);
     }
 
+
     public function create(): Response
     {
-        return Inertia::render('admin/exams/CreateExam');
+        $banks = QuestionBank::all();
+
+        return Inertia::render('admin/exams/CreateExam', [
+            'banks' => $banks,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
+            'question_bank_id' => ['required', 'exists:question_banks,id'],
             'title'            => ['required', 'string', 'max:255'],
             'description'      => ['nullable', 'string'],
             'token'            => ['nullable', 'string', 'max:50'],
@@ -58,14 +65,18 @@ class ExamController extends Controller
 
     public function edit(Exam $exam)
     {
+        $banks = QuestionBank::all();
+
         return inertia('admin/exams/EditExam', [
-            'exam' => $exam,
+            'exam'  => $exam->load('questionBank'),
+            'banks' => $banks,
         ]);
     }
 
     public function update(Request $request, Exam $exam)
     {
         $validated = $request->validate([
+            'question_bank_id' => ['required', 'exists:question_banks,id'],
             'title'            => ['required', 'string', 'max:255'],
             'description'      => ['nullable', 'string'],
             'token'            => ['nullable', 'string', 'max:50'],
@@ -79,6 +90,7 @@ class ExamController extends Controller
         return redirect()->route('admin.exams.index')
             ->with('success', 'Exam updated successfully.');
     }
+
 
     public function destroy(Exam $exam)
     {
