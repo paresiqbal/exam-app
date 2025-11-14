@@ -43,7 +43,7 @@ class QuestionBankController extends Controller
         ]);
 
         QuestionBank::create([
-            'created_by'  => Auth::id(),
+            'owner_id' => Auth::id(),
             'title'       => $validated['title'],
             'description' => $validated['description'] ?? null,
         ]);
