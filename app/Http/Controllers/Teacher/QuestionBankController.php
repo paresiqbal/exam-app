@@ -14,7 +14,7 @@ class QuestionBankController extends Controller
     public function index()
     {
         $banks = QuestionBank::withCount('questions')
-            ->where('created_by', Auth::id())
+            ->where('owner_id', Auth::id())
             ->latest()
             ->paginate(10)
             ->through(fn($bank) => [
