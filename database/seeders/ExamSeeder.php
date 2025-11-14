@@ -21,6 +21,7 @@ class ExamSeeder extends Seeder
         $now = Carbon::now();
 
         Exam::updateOrCreate(
+
             ['title' => 'Simulasi Ujian Masuk 1'],
             [
                 'created_by'       => $admin->id,
