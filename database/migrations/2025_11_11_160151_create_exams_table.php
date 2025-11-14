@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('end_at');
             $table->integer('duration_minutes');
             $table->string('status')->default('upcoming');
+            $table->foreignId('question_bank_id')->constrained('question_banks')->cascadeOnDelete();
             $table->timestamps();
         });
     }

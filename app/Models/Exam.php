@@ -14,6 +14,7 @@ class Exam extends Model
 
     protected $fillable = [
         'created_by',
+        'question_bank_id',
         'title',
         'description',
         'token',
