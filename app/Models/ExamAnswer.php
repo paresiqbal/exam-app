@@ -14,7 +14,7 @@ class ExamAnswer extends Model
         'question_id',
         'answer',
         'is_correct',
-        'score',
+        'score'
     ];
 
     protected $casts = [

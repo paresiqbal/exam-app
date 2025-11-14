@@ -19,6 +19,7 @@ return new class extends Migration {
                 ->cascadeOnDelete();
 
             $table->json('answer')->nullable();
+
             $table->boolean('is_correct')->nullable();
             $table->unsignedInteger('score')->nullable();
 
