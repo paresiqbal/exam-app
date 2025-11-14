@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Student;
 
+use App\Http\Controllers\Controller;
 use App\Models\ExamAttempt;
 use App\Models\ExamAnswer;
 use App\Models\Question;
@@ -58,7 +59,11 @@ class StudentExamAnswerController extends Controller
                 'choices'   => $question->type === 'mcq'
                     ? $question->choices()
                     ->orderBy('position')
-                    ->get(['id', 'label', 'option_text'])
+                    ->get([
+                        'id',
+                        'label',
+                        'text as option_text',
+                    ])
                     : [],
             ],
             'number'          => $number,
@@ -78,8 +83,8 @@ class StudentExamAnswerController extends Controller
 
         $data = $request->validate([
             'question_id' => ['required', 'exists:questions,id'],
-            'answer'      => ['nullable', 'array'],   // untuk mcq (array id pilihan)
-            'boolean'     => ['nullable', 'boolean'], // untuk boolean
+            'answer'      => ['nullable', 'array'],
+            'boolean'     => ['nullable', 'boolean'],
         ]);
 
         $question = Question::with('choices')->findOrFail($data['question_id']);

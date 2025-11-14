@@ -6,11 +6,10 @@ use Laravel\Fortify\Features;
 use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\ExamController;
-use App\Http\Controllers\Admin\ExamQuestionController;
-use App\Http\Controllers\Student\StudentExamController;
-use App\Http\Controllers\StudentExamAnswerController;
 use App\Http\Controllers\Teacher\QuestionBankController;
 use App\Http\Controllers\Teacher\QuestionController;
+use App\Http\Controllers\Student\StudentExamController;
+use App\Http\Controllers\Student\StudentExamAnswerController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -112,7 +111,6 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
         )->name('attempt.finish');
     });
 });
-
 
 
 

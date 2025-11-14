@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
+use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -61,7 +62,10 @@ class StudentExamController extends Controller
         }
 
         if ($existingAttempt && ! $existingAttempt->finished_at) {
-            return redirect()->route('student.attempts.show', $existingAttempt);
+            return redirect()->route('student.attempt.questions.show', [
+                'attempt' => $existingAttempt->id,
+                'number'  => 1,
+            ]);
         }
 
         $attempt = ExamAttempt::create([
@@ -78,29 +82,60 @@ class StudentExamController extends Controller
         ]);
     }
 
-    public function show(Request $request, ExamAttempt $attempt): Response
+    public function show(Request $request, ExamAttempt $attempt, int $number)
     {
         if ($attempt->user_id !== $request->user()->id) {
             abort(403);
         }
 
-        $attempt->load('exam');
+        $exam = $attempt->exam()->with(['questions.choices'])->firstOrFail();
 
-        return Inertia::render('student/exams/ShowAttempt', [
+        $questions = $exam->questions()
+            ->with('choices')
+            ->orderBy('exam_question.position')
+            ->get();
+
+        if ($questions->isEmpty()) {
+            // Ujian belum punya soal → balikkan ke dashboard dengan pesan
+            return redirect()
+                ->route('student.dashboard')
+                ->with('error', 'Ujian ini belum memiliki soal. Silakan hubungi pengawas.');
+        }
+
+        if ($number < 1 || $number > $questions->count()) {
+            // nomor soal tidak valid → paksa ke nomor 1
+            return redirect()->route('student.attempt.questions.show', [
+                'attempt' => $attempt->id,
+                'number'  => 1,
+            ]);
+        }
+
+        $question = $questions[$number - 1];
+
+        $existingAnswer = ExamAnswer::where('exam_attempt_id', $attempt->id)
+            ->where('question_id', $question->id)
+            ->first();
+
+        return Inertia::render('student/exams/QuestionPage', [
             'attempt' => [
-                'id'         => $attempt->id,
-                'exam_id'    => $attempt->exam_id,
-                'started_at' => optional($attempt->started_at)->toDateTimeString(),
-                'finished_at' => optional($attempt->finished_at)->toDateTimeString(),
-                'score'      => $attempt->score,
-                'passed'     => $attempt->passed,
-                'exam'       => [
-                    'id'               => $attempt->exam->id,
-                    'title'            => $attempt->exam->title,
-                    'description'      => $attempt->exam->description,
-                    'duration_minutes' => $attempt->exam->duration_minutes,
-                ],
+                'id'      => $attempt->id,
+                'exam_id' => $attempt->exam_id,
             ],
+            'question' => [
+                'id'        => $question->id,
+                'type'      => $question->type,
+                'prompt'    => $question->prompt,
+                'image'     => $question->image_path,
+                'max_score' => $question->max_score,
+                'choices'   => $question->type === 'mcq'
+                    ? $question->choices()
+                    ->orderBy('position')
+                    ->get(['id', 'label', 'option_text'])
+                    : [],
+            ],
+            'number'          => $number,
+            'total_questions' => $questions->count(),
+            'answer'          => $existingAnswer?->answer ?? null,
         ]);
     }
 }
