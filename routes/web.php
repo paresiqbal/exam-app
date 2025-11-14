@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ExamQuestionController;
+use App\Http\Controllers\Student\StudentExamController;
 use App\Http\Controllers\Teacher\QuestionBankController;
 use App\Http\Controllers\Teacher\QuestionController;
 
@@ -87,7 +88,14 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
         return Inertia::render('student/dashboard');
     })->name('student.dashboard');
 
-    // Route student lain
+
+    Route::prefix('student')->name('student.')->group(function () {
+        Route::post('/exams/join', [StudentExamController::class, 'join'])
+            ->name('exams.join');
+
+        Route::get('/attempts/{attempt}', [StudentExamController::class, 'show'])
+            ->name('attempts.show');
+    });
 });
 
 

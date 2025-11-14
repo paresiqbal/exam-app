@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained(); // student
             $table->dateTime('started_at')->nullable();
             $table->dateTime('finished_at')->nullable();
-            $table->integer('score')->default(0);
+            $table->integer('score')->nullable();
             $table->boolean('passed')->default(false);
             $table->timestamps();
 

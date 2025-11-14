@@ -1,34 +1,75 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
+import React from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Student Dashboard',
-        href: dashboard().url,
-    },
-];
+type JoinFormData = {
+    token: string;
+};
 
 export default function StudentDashboard() {
+    const { data, setData, post, processing, errors } = useForm<JoinFormData>({
+        token: '',
+    });
+
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/student/exams/join');
+    };
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Student Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+        <AppLayout>
+            <Head title="Dashboard Siswa" />
+
+            <div className="p-4">
+                <h1 className="mb-4 text-2xl font-semibold">Dashboard Siswa</h1>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                    {/* Kartu Masuk Ujian */}
+                    <div className="rounded-xl border bg-card p-6">
+                        <h2 className="text-lg font-semibold">
+                            Masuk Ujian dengan Token
+                        </h2>
+                        <p className="mt-1 mb-4 text-xs text-muted-foreground">
+                            Masukkan token ujian yang diberikan oleh pengawas /
+                            guru untuk mulai ujian.
+                        </p>
+
+                        <form onSubmit={submit} className="space-y-3">
+                            <div>
+                                <label className="mb-1 block text-sm font-medium">
+                                    Token Ujian
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.token}
+                                    onChange={(e) =>
+                                        setData('token', e.target.value)
+                                    }
+                                    className="w-full rounded-lg border px-3 py-2 text-sm tracking-[0.2em] uppercase"
+                                    placeholder="MISAL: ABC123"
+                                />
+                                {errors.token && (
+                                    <p className="mt-1 text-xs text-red-500">
+                                        {errors.token}
+                                    </p>
+                                )}
+                            </div>
+
+                            <Button type="submit" disabled={processing}>
+                                {processing ? 'Memproses...' : 'Masuk Ujian'}
+                            </Button>
+                        </form>
                     </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                    {/* Kartu lain misalnya info universitas, dsb (nanti) */}
+                    <div className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">
+                        <p>
+                            Di sini nanti bisa kamu isi daftar universitas,
+                            jurusan, dan minimal nilai. Untuk sekarang bisa
+                            dikosongkan dulu.
+                        </p>
                     </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                 </div>
             </div>
         </AppLayout>
