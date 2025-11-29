@@ -18,6 +18,8 @@ type Question = {
     max_score: number;
 };
 
+type AnswerValue = number[] | boolean | null;
+
 type PageProps = {
     attempt: {
         id: number;
@@ -29,21 +31,40 @@ type PageProps = {
     answer: AnswerValue;
 };
 
-type AnswerValue = number[] | boolean | null;
-
 export default function QuestionPage() {
     const { attempt, question, number, total_questions, answer } =
         usePage<PageProps>().props;
 
-    // MCQ -> array of choice_id[]
-    // Boolean -> true/false
-    const [selectedAnswer, setSelectedAnswer] = useState<AnswerValue>(
-        answer ?? (question.type === 'mcq' ? [] : null),
+    const normalizeInitialAnswer = (
+        answer: AnswerValue,
+        question: Question,
+    ): AnswerValue => {
+        if (question.type === 'mcq') {
+            // For MCQ we always want an array
+            return Array.isArray(answer) ? answer : [];
+        }
+
+        if (question.type === 'boolean') {
+            // For boolean we only accept true/false, otherwise null
+            return typeof answer === 'boolean' ? answer : null;
+        }
+
+        return null;
+    };
+
+    const [selectedAnswer, setSelectedAnswer] = useState<AnswerValue>(() =>
+        normalizeInitialAnswer(answer, question),
     );
     const [processing, setProcessing] = useState(false);
 
     const isFirst = number === 1;
     const isLast = number === total_questions;
+
+    const isAnswered =
+        (question.type === 'mcq' &&
+            Array.isArray(selectedAnswer) &&
+            selectedAnswer.length > 0) ||
+        (question.type === 'boolean' && typeof selectedAnswer === 'boolean');
 
     const saveAnswer = (goTo: number | 'finish') => {
         setProcessing(true);
@@ -52,6 +73,9 @@ export default function QuestionPage() {
             `/student/attempts/${attempt.id}/answer`,
             {
                 question_id: question.id,
+                // backend expects:
+                // - "answer" for MCQ (array of ids)
+                // - "boolean" for true/false
                 answer: question.type === 'mcq' ? selectedAnswer : null,
                 boolean: question.type === 'boolean' ? selectedAnswer : null,
             },
@@ -70,16 +94,23 @@ export default function QuestionPage() {
         );
     };
 
+    // MCQ: toggle (multi-select). If you want single-select, see comment below.
     const toggleChoice = (choiceId: number) => {
-        if (Array.isArray(selectedAnswer)) {
-            if (selectedAnswer.includes(choiceId)) {
-                setSelectedAnswer(
-                    selectedAnswer.filter((id) => id !== choiceId),
-                );
-            } else {
-                setSelectedAnswer([...selectedAnswer, choiceId]);
+        setSelectedAnswer((prev) => {
+            // If somehow not array yet, start fresh with this choice
+            if (!Array.isArray(prev)) {
+                return [choiceId];
             }
-        }
+
+            if (prev.includes(choiceId)) {
+                return prev.filter((id) => id !== choiceId);
+            }
+
+            return [...prev, choiceId];
+
+            // If you want MCQ to be single-choice only, replace everything above with:
+            // return [choiceId];
+        });
     };
 
     return (
@@ -178,7 +209,7 @@ export default function QuestionPage() {
 
                     {!isLast ? (
                         <Button
-                            disabled={processing}
+                            disabled={processing || !isAnswered}
                             onClick={() => saveAnswer(number + 1)}
                         >
                             Selanjutnya
@@ -186,7 +217,7 @@ export default function QuestionPage() {
                     ) : (
                         <Button
                             variant="destructive"
-                            disabled={processing}
+                            disabled={processing || !isAnswered}
                             onClick={() => saveAnswer('finish')}
                         >
                             Selesai Ujian

@@ -61,6 +61,11 @@ type ExamFormData = {
     }[];
 };
 
+type FlashProps = {
+    success?: string;
+    error?: string;
+};
+
 function formatDateTimeLocal(value: string): string {
     if (!value) return '';
     return value.slice(0, 16);
@@ -131,8 +136,7 @@ export default function EditExam() {
         setData('questions', updated);
     };
 
-    const { flash } = usePage<{ flash: { success?: string; error?: string } }>()
-        .props;
+    const { flash } = usePage<{ flash?: FlashProps }>().props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -452,13 +456,13 @@ export default function EditExam() {
                         </div>
                     </div>
 
-                    {flash.success && (
+                    {flash?.success && (
                         <div className="mb-4 rounded-md bg-green-100 p-3 text-sm text-green-800">
                             {flash.success}
                         </div>
                     )}
 
-                    {flash.error && (
+                    {flash?.error && (
                         <div className="mb-4 rounded-md bg-red-100 p-3 text-sm text-red-800">
                             {flash.error}
                         </div>

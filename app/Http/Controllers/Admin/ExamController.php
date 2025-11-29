@@ -71,18 +71,16 @@ class ExamController extends Controller
         $exam->load([
             'questionBank',
             'questions' => function ($q) {
-                // ambil semua kolom questions + pivot
                 $q->select('questions.*');
             },
         ]);
 
-        // default: tidak ada soal kalau belum pilih bank
         $availableQuestions = collect();
 
         if ($exam->question_bank_id) {
             $availableQuestions = Question::where('question_bank_id', $exam->question_bank_id)
                 ->orderBy('id')
-                ->get(); // <─ tidak menyebut nama kolom spesifik
+                ->get();
         }
 
         return inertia('admin/exams/EditExam', [
@@ -104,7 +102,6 @@ class ExamController extends Controller
             'end_at'           => ['required', 'date', 'after_or_equal:start_at'],
             'duration_minutes' => ['required', 'integer', 'min:1'],
 
-            // questions array from frontend
             'questions'                    => ['nullable', 'array'],
             'questions.*.id'              => [
                 'required_with:questions',
@@ -120,10 +117,8 @@ class ExamController extends Controller
             'questions.*.shuffle_choices' => ['nullable', 'boolean'],
         ]);
 
-        // Update basic exam fields
         $exam->update($validated);
 
-        // Sync questions ke pivot
         $questionsData = $request->input('questions', []);
 
         $syncPayload = [];
@@ -147,15 +142,12 @@ class ExamController extends Controller
 
     public function destroy(Exam $exam)
     {
-        // 1. Kalau sudah ada attempt, jangan hapus, tampilkan pesan rapi
         if ($exam->attempts()->exists()) {
             return back()->with('error', 'Tidak bisa menghapus ujian yang sudah pernah dikerjakan siswa.');
         }
 
-        // 2. Lepaskan relasi soal (opsional, tergantung FK)
         $exam->questions()->detach();
 
-        // 3. Hapus exam
         $exam->delete();
 
         return redirect()

@@ -19,62 +19,17 @@ class StudentExamController extends Controller
             'token' => ['required', 'string'],
         ]);
 
-        $token = $data['token'];
+        $exam = Exam::where('token', $data['token'])->firstOrFail();
 
-        $user = $request->user();
-
-        $exam = Exam::where('token', $token)->first();
-
-        if (! $exam) {
-            return back()->withErrors([
-                'token' => 'Token ujian tidak valid.',
-            ]);
-        }
-
-        $now = now();
-        if ($exam->start_at->isFuture()) {
-            return back()->withErrors([
-                'token' => 'Ujian belum dimulai.',
-            ]);
-        }
-
-        if ($exam->end_at->isPast()) {
-            return back()->withErrors([
-                'token' => 'Ujian sudah berakhir.',
-            ]);
-        }
-
-        if ($exam->status === 'done') {
-            return back()->withErrors([
-                'token' => 'Ujian ini sudah selesai.',
-            ]);
-        }
-
-        $existingAttempt = ExamAttempt::where('exam_id', $exam->id)
-            ->where('user_id', $user->id)
-            ->latest()
-            ->first();
-
-        if ($existingAttempt && $existingAttempt->finished_at) {
-            return back()->withErrors([
-                'token' => 'Kamu sudah menyelesaikan ujian ini.',
-            ]);
-        }
-
-        if ($existingAttempt && ! $existingAttempt->finished_at) {
-            return redirect()->route('student.attempt.questions.show', [
-                'attempt' => $existingAttempt->id,
-                'number'  => 1,
-            ]);
-        }
-
-        $attempt = ExamAttempt::create([
-            'exam_id'    => $exam->id,
-            'user_id'    => $user->id,
-            'started_at' => now(),
-            'score'      => null,
-            'passed'     => false,
-        ]);
+        $attempt = ExamAttempt::firstOrCreate(
+            [
+                'exam_id' => $exam->id,
+                'user_id' => $request->user()->id,
+            ],
+            [
+                'started_at' => now(),
+            ]
+        );
 
         return redirect()->route('student.attempt.questions.show', [
             'attempt' => $attempt->id,
